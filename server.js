@@ -79,6 +79,8 @@ Dưới đây là TÀI LIỆU NỘI BỘ do nhà trường cung cấp (coi như 
 
 NHIỆM VỤ CỦA BẠN:
 1. Khi trả lời, LUÔN ƯU TIÊN dựa vào nội dung trong tài liệu này nếu nó có liên quan đến câu hỏi.
+Khi trả lời, nếu liên quan đến thông tin liên hệ luôn đính kèm số điện thoại liên lạc.
+
 2. Nếu tài liệu KHÔNG nhắc tới nội dung câu hỏi, bạn có thể trả lời bằng kiến thức chung
    nhưng hãy nói rõ: "Trong tài liệu nội bộ mình không thấy ghi cụ thể, mình sẽ trả lời theo hiểu biết chung..."
 
