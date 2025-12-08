@@ -1,0 +1,15 @@
+{
+  "name": "ai-voice-student",
+  "version": "1.0.0",
+  "description": "Web AI nói - nghe cho học sinh",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.0",
+    "multer": "^1.4.5",
+    "openai": "^4.0.0"
+  }
+}
