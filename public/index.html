@@ -13,6 +13,10 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    width: 100vw;
+   height: 100vh;
+   max-width: 100%;
+
   }
 
   .card {
@@ -21,8 +25,7 @@
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    text-align: center;
-    min-width: 400px;
+    text-align: center; 
   }
 
   h2 {
@@ -65,10 +68,11 @@
   /* Danh sách bước pipeline */
   #pipeline-steps {
     margin-top: 8px;
-    text-align: left;
+    text-align: center;
+    font-style: italic;
   }
   .pipeline-step {
-    font-size: 0.85rem;
+    font-size: 0.5rem;
     color: #4b5563;
     margin-top: 2px;
   }
@@ -202,8 +206,8 @@
   const pipelineStepsConfig = [
     { id: 1, text: "B1: Đang tải dữ liệu lên hệ thống" },
     { id: 2, text: "B2: Đang chuyển giọng nói sang văn bản" },
-    { id: 3, text: "B3: Đang truy cập và phân tích big data của nhà trường" },
-    { id: 4, text: "B4: Đang chuẩn hóa và biên tập câu trả lời" },
+    { id: 3, text: "B3: Đang truy cập big data của nhà trường" },
+    { id: 4, text: "B4: Đang biên tập câu trả lời" },
     { id: 5, text: "B5: Đang tạo file âm thanh trả lời" },
     { id: 6, text: "B6: Đang phát file âm thanh cho bạn nghe" },
   ];
