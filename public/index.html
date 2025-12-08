@@ -62,11 +62,34 @@
     min-height: 18px;
   }
 
+  /* Danh sách bước pipeline */
+  #pipeline-steps {
+    margin-top: 8px;
+    text-align: left;
+  }
+  .pipeline-step {
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-top: 2px;
+  }
+  .pipeline-step.active {
+    color: #111827;
+    font-weight: 600;
+  }
+  .pipeline-check {
+    margin-left: 6px;
+    color: #16a34a;
+    font-weight: 700;
+  }
+  #step5Timer {
+    margin-left: 6px;
+    color: #2563eb;
+  }
+
+  /* Avatar (nếu sau này thêm) */
   #avatar-wrapper {
     margin-top: 14px;
   }
-
-  /* Avatar scale for mobile */
   #avatar {
     width: 120px;
     height: 120px;
@@ -135,8 +158,8 @@
 <body>
 
 <div class="card">
-  <h2>🎧 Hệ thống Trợ Giúp Học Sinh</h2>
-  <p>Để bắt đầu, hãy bấm <b>Start</b> rồi nói vào mic.<br>Khi nói xong hãy bấm <b>Stop</b> (hoặc ngưng trong 3 giây),<br>Hệ thống sẽ biên tập thông tin và trả lời bằng giọng nói.</p>
+  <h2>🎧 Học sinh DHE & Mr. "Biết Tuốt"</h2>
+  <p>Để bắt đầu, hãy bấm <b>Start</b> rồi nói vào mic.<br>Khi nói xong hãy bấm <b>Stop</b> (hoặc ngưng trong 3 giây),<br>Mình sẽ biên tập thông tin và trả lời bằng giọng nói.</p>
 
   <div>
     <button id="startBtn">🎙 Start</button>
@@ -144,6 +167,9 @@
   </div>
 
   <div id="status">Chưa ghi âm.</div>
+
+  <!-- Danh sách 6 bước pipeline -->
+  <div id="pipeline-steps"></div>
 
   <div id="transcript"><b>Học sinh nói:</b> (chưa có)</div>
   <div id="aiText"><b>AI trả lời:</b> (chưa có)</div>
@@ -171,39 +197,147 @@
   const audioPlayer = document.getElementById("audioPlayer");
 
   // ====== PIPELINE TRẠNG THÁI B1..B6 ======
-  const pipelineSteps = [
-    "B1: Đang tải dữ liệu lên hệ thống...",
-    "B2: Đang chuyển giọng nói sang văn bản (mô hình ngôn ngữ lớn)...",
-    "B3: Đang truy cập và phân tích big data của nhà trường...",
-    "B4: Đang chuẩn hóa và biên tập câu trả lời...",
-    "B5: Đang tạo file âm thanh trả lời...",
+  const pipelineContainer = document.getElementById("pipeline-steps");
+
+  const pipelineStepsConfig = [
+    { id: 1, text: "B1: Đang tải dữ liệu lên hệ thống" },
+    { id: 2, text: "B2: Đang chuyển giọng nói sang văn bản" },
+    { id: 3, text: "B3: Đang truy cập và phân tích big data của nhà trường" },
+    { id: 4, text: "B4: Đang chuẩn hóa và biên tập câu trả lời" },
+    { id: 5, text: "B5: Đang tạo file âm thanh trả lời" },
+    { id: 6, text: "B6: Đang phát file âm thanh cho bạn nghe" },
   ];
-  let progressTimer = null;
-  let progressIndex = 0;
+
+  const stepElements = {}; // { id: {root, textSpan, checkSpan, timerSpan?} }
+
+  // Tạo UI bước
+  pipelineStepsConfig.forEach((step) => {
+    const div = document.createElement("div");
+    div.className = "pipeline-step";
+    div.dataset.step = step.id;
+
+    const textSpan = document.createElement("span");
+    textSpan.className = "pipeline-text";
+    textSpan.textContent = step.text;
+
+    const timerSpan = document.createElement("span");
+    if (step.id === 5) {
+      timerSpan.id = "step5Timer";
+    }
+
+    const checkSpan = document.createElement("span");
+    checkSpan.className = "pipeline-check";
+
+    div.appendChild(textSpan);
+    if (step.id === 5) div.appendChild(timerSpan);
+    div.appendChild(checkSpan);
+
+    pipelineContainer.appendChild(div);
+
+    stepElements[step.id] = {
+      root: div,
+      textSpan,
+      checkSpan,
+      timerSpan: step.id === 5 ? timerSpan : null,
+    };
+  });
+
+  function clearActiveSteps() {
+    Object.values(stepElements).forEach((s) => {
+      s.root.classList.remove("active");
+    });
+  }
+
+  function resetPipelineStepsUI() {
+    clearActiveSteps();
+    Object.values(stepElements).forEach((s) => {
+      s.checkSpan.textContent = "";
+      if (s.timerSpan) s.timerSpan.textContent = "";
+    });
+  }
+
+  function setStepActive(stepId) {
+    clearActiveSteps();
+    const step = stepElements[stepId];
+    if (step) {
+      step.root.classList.add("active");
+    }
+  }
+
+  function markStepDone(stepId) {
+    const step = stepElements[stepId];
+    if (step) {
+      if (!step.checkSpan.textContent) {
+        step.checkSpan.textContent = "✓";
+      }
+    }
+  }
+
+  // Quản lý mô phỏng pipeline B1..B5 & timer B5
+  let pipelineInterval = null;
+  let pipelineStage = 0; // 0 = chưa, 1..5 = B1..B5
+  let step5Seconds = 0;
+  let step5TimerInterval = null;
+
+  function startStep5Timer() {
+    const s5 = stepElements[5];
+    if (!s5) return;
+    step5Seconds = 0;
+    if (step5TimerInterval) clearInterval(step5TimerInterval);
+    step5TimerInterval = setInterval(() => {
+      step5Seconds++;
+      s5.timerSpan.textContent = ` (${step5Seconds}s)`;
+    }, 1000);
+  }
+
+  function stopStep5Timer() {
+    if (step5TimerInterval) {
+      clearInterval(step5TimerInterval);
+      step5TimerInterval = null;
+    }
+  }
 
   function startProcessingProgress() {
-    // reset
-    stopProcessingProgress();
-    progressIndex = 0;
-    statusEl.textContent = pipelineSteps[0];
+    resetPipelineStepsUI();
+    stopStep5Timer();
 
-    progressTimer = setInterval(() => {
-      progressIndex++;
-      if (progressIndex < pipelineSteps.length) {
-        statusEl.textContent = pipelineSteps[progressIndex];
-      } else {
-        // đã đi hết các bước mô phỏng, giữ bước cuối
-        clearInterval(progressTimer);
-        progressTimer = null;
+    // Bắt đầu từ B1
+    pipelineStage = 1;
+    setStepActive(1);
+    statusEl.textContent = pipelineStepsConfig[0].text + "...";
+
+    // B1 -> B4: mỗi 1.2s đánh ✓ và chuyển sang bước tiếp theo.
+    // Lần tick thứ 4: B4 ✓ và chuyển sang B5 + bật timer, rồi dừng interval.
+    pipelineInterval = setInterval(() => {
+      if (pipelineStage >= 1 && pipelineStage <= 3) {
+        // đánh ✓ bước hiện tại
+        markStepDone(pipelineStage);
+        // chuyển sang bước sau
+        pipelineStage++;
+        setStepActive(pipelineStage);
+        statusEl.textContent =
+          pipelineStepsConfig[pipelineStage - 1].text + "...";
+      } else if (pipelineStage === 4) {
+        // hoàn thành B4, chuyển sang B5 và bật timer
+        markStepDone(4);
+        pipelineStage = 5;
+        setStepActive(5);
+        statusEl.textContent =
+          pipelineStepsConfig[4].text + " (đang chạy, vui lòng đợi...)";
+        startStep5Timer();
+
+        clearInterval(pipelineInterval);
+        pipelineInterval = null;
       }
-    }, 1200); // 1.2s mỗi bước cho cảm giác "đang chạy pipeline"
+    }, 1200);
   }
 
   function stopProcessingProgress() {
-    if (progressTimer) {
-      clearInterval(progressTimer);
-      progressTimer = null;
+    if (pipelineInterval) {
+      clearInterval(pipelineInterval);
+      pipelineInterval = null;
     }
+    stopStep5Timer();
   }
 
   // ===== 🎨 TẠO CANVAS SÓNG ÂM (WAVEFORM) =====
@@ -242,7 +376,6 @@
     const avg = total / bufferLength; // ~0 → im lặng, cao hơn → có tiếng
     const volumeNorm = avg / 128;     // 0–1
 
-    // Nếu âm lượng đủ lớn → coi như có tiếng nói
     const now = Date.now();
     if (volumeNorm > 0.05) {
       lastSoundTime = now;
@@ -304,6 +437,8 @@
     try {
       // Khi bắt đầu ghi âm mới → dừng phát audio cũ & reset pipeline
       stopProcessingProgress();
+      resetPipelineStepsUI();
+      statusEl.textContent = "Đang chuẩn bị ghi âm...";
 
       audioPlayer.pause();
       audioPlayer.currentTime = 0;
@@ -323,13 +458,16 @@
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+
         // Bắt đầu mô phỏng pipeline xử lý ngay khi stop xong
         startProcessingProgress();
         sendAudioToServer(audioBlob);
+
         // Dừng waveform
         if (animationId) cancelAnimationFrame(animationId);
         animationId = null;
         clearWaveform();
+
         // Tắt audioContext cho đỡ tốn tài nguyên
         if (audioContext) {
           audioContext.close();
@@ -344,8 +482,7 @@
       stopBtn.disabled = false;
 
       // Thiết lập Web Audio để đo sóng âm
-      const AudioCtx =
-        window.AudioContext || window.webkitAudioContext;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
       audioContext = new AudioCtx();
       microphone = audioContext.createMediaStreamSource(stream);
       analyser = audioContext.createAnalyser();
@@ -373,7 +510,8 @@
       startBtn.disabled = false;
 
       if (!isAuto) {
-        statusEl.textContent = "Đang kết thúc ghi âm, chuẩn bị gửi lên hệ thống...";
+        statusEl.textContent =
+          "Đang kết thúc ghi âm, chuẩn bị gửi lên hệ thống...";
       }
     }
   }
@@ -398,8 +536,17 @@
 
       const data = await response.json();
 
-      // Ngay khi có kết quả → dừng pipeline mô phỏng
+      // Ngay khi có kết quả → dừng pipeline mô phỏng & timer B5
       stopProcessingProgress();
+
+      // Đảm bảo B1–B5 đều ✓
+      for (let i = 1; i <= 5; i++) {
+        markStepDone(i);
+      }
+      // Nếu B5 có chạy timer thì giữ lại số giây đã đếm
+      if (step5Seconds > 0 && stepElements[5]?.timerSpan) {
+        stepElements[5].timerSpan.textContent = ` (${step5Seconds}s)`;
+      }
 
       transcriptEl.innerHTML =
         "<b>Học sinh nói:</b> " + (data.transcript || "(không nhận được)");
@@ -410,17 +557,21 @@
         audioPlayer.src = data.audio_url;
         audioPlayer.style.display = "block";
 
-        // B5 đã xong, chuẩn bị phát
+        // B5 xong, chuyển sang B6
+        setStepActive(6);
         statusEl.textContent =
-          "B5: Đã tạo xong file âm thanh. B6: Đang phát file âm thanh...";
+          "B5: Đã tạo xong file âm thanh. B6: Đang chuẩn bị phát file âm thanh...";
 
         audioPlayer.play();
 
         audioPlayer.onplay = () => {
+          setStepActive(6);
           statusEl.textContent = "B6: Đang phát file âm thanh trả lời...";
         };
 
         audioPlayer.onended = () => {
+          markStepDone(6);
+          clearActiveSteps();
           statusEl.textContent =
             "Hoàn thành: Đã phát xong. Bạn có thể bấm Start để hỏi tiếp.";
         };
