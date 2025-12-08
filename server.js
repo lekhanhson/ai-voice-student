@@ -164,7 +164,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     const sttResp = await client.audio.transcriptions.create({
       file: fs.createReadStream(convertedPath),
       model: "gpt-4o-transcribe",
-      // language: "vi", // bật nếu muốn ép tiếng Việt
+      language: "vi", // bật nếu muốn ép tiếng Việt
     });
 
     const userText = sttResp.text || "";
@@ -175,7 +175,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     console.log("AI answer:", aiText);
 
     // 4) TTS: đọc lại câu trả lời (giới hạn độ dài cho nhẹ)
-    const MAX_TTS_CHARS = 600;
+    const MAX_TTS_CHARS = 1000;
     const ttsInput =
       aiText.length > MAX_TTS_CHARS
         ? aiText.slice(0, MAX_TTS_CHARS) + "..."
