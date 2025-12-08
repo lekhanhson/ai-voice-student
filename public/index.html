@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Trợ Giúp Học Sinh – Nói & Nghe</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #f4f7ff;
+    }
+    .card {
+      background: white;
+      padding: 24px 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 999px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 8px;
+    }
+    #startBtn {
+      background: #2563eb;
+      color: #fff;
+    }
+    #stopBtn {
+      background: #ef4444;
+      color: #fff;
+    }
+    #status {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #555;
+    }
+    #transcript, #aiText {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #f9fafb;
+      font-size: 14px;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🎧 AI Trợ Giúp Học Sinh</h2>
+  <p>Bấm <b>Start</b> rồi nói vào mic. AI sẽ nghe và trả lời bằng giọng nói.</p>
+
+  <div>
+    <button id="startBtn">🎙 Start</button>
+    <button id="stopBtn" disabled>⏹ Stop</button>
+  </div>
+
+  <div id="status">Chưa ghi âm.</div>
+
+  <div id="transcript"><b>Học sinh nói:</b> (chưa có)</div>
+  <div id="aiText"><b>AI trả lời:</b> (chưa có)</div>
+
+  <audio id="audioPlayer" controls style="margin-top: 12px; width: 100%; display:none;"></audio>
+</div>
+
+<script>
+  let mediaRecorder;
+  let audioChunks = [];
+
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const statusEl = document.getElementById('status');
+  const transcriptEl = document.getElementById('transcript');
+  const aiTextEl = document.getElementById('aiText');
+  const audioPlayer = document.getElementById('audioPlayer');
+
+  // Bấm Start: xin quyền micro + bắt đầu ghi
+  startBtn.onclick = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        sendAudioToServer(audioBlob);
+      };
+
+      mediaRecorder.start();
+      statusEl.textContent = 'Đang ghi âm... Hãy nói vào micro.';
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Không truy cập được micro. Hãy kiểm tra quyền trình duyệt.';
+    }
+  };
+
+  // Bấm Stop: dừng ghi, gửi audio lên server
+  stopBtn.onclick = () => {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+      statusEl.textContent = 'Đang xử lý...';
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    }
+  };
+
+  // Gửi audio lên server /api/voice-chat
+  async function sendAudioToServer(audioBlob) {
+    try {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'speech.webm');
+
+      const response = await fetch('/api/voice-chat', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Server error');
+
+      const data = await response.json();
+
+      transcriptEl.innerHTML =
+        '<b>Học sinh nói:</b> ' + (data.transcript || '(không nhận được)');
+      aiTextEl.innerHTML =
+        '<b>AI trả lời:</b> ' + (data.ai_text || '(không nhận được)');
+
+      if (data.audio_url) {
+        audioPlayer.src = data.audio_url;
+        audioPlayer.style.display = 'block';
+        audioPlayer.play();
+      } else {
+        audioPlayer.style.display = 'none';
+      }
+
+      statusEl.textContent = 'Đã xử lý xong.';
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Có lỗi khi gửi âm thanh lên server.';
+    }
+  }
+</script>
+
+</body>
+</html>
