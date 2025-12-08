@@ -28,42 +28,6 @@ const client = new OpenAI({
  * Đừng quá dài, khoảng 1–2 trang A4 là ổn.
  */
 const INTERNAL_DOC = `
-mô ta nhà trường
-`;
-
-/**
- * Hỏi AI với prompt cố định + tài liệu nội bộ
- */
-async function askSchoolAssistant(userText) {
-  try {
-    // Giới hạn tài liệu nội bộ nếu sau này bạn lỡ để quá dài
-    const MAX_DOC_CHARS = 8000;
-    const docSnippet =
-      INTERNAL_DOC.length > MAX_DOC_CHARS
-        ? INTERNAL_DOC.slice(0, MAX_DOC_CHARS)
-        : INTERNAL_DOC;
-
-    const systemPrompt = `
-Bạn là tư vấn của một trường học.
-
-Dưới đây là TÀI LIỆU NỘI BỘ do nhà trường cung cấp (coi như nguồn chính thống và mới nhất).
-
-NHIỆM VỤ CỦA BẠN:
-1. Khi trả lời, LUÔN ƯU TIÊN dựa vào nội dung trong tài liệu này nếu nó có liên quan đến câu hỏi.
-2. Nếu tài liệu KHÔNG nhắc tới nội dung câu hỏi, bạn có thể trả lời bằng kiến thức chung
-   nhưng hãy nói rõ: "Trong tài liệu nội bộ mình không thấy ghi cụ thể, mình sẽ trả lời theo hiểu biết chung..."
-
-3. Bạn CHỈ trả lời những nội dung mang tính giáo dục, phù hợp lứa tuổi 15 trở xuống.
-   Nếu câu hỏi có nội dung người lớn, tình dục chi tiết, bạo lực cực đoan, ma túy, cờ bạc,
-   chính trị phức tạp, tài chính đầu cơ, hoặc không mang tính giáo dục:
-   - Từ chối trả lời trực tiếp.
-   - Giải thích ngắn gọn vì sao chủ đề chưa phù hợp.
-   - Gợi ý học sinh hỏi bố mẹ, thầy cô hoặc người lớn đáng tin cậy.
-   - Gợi ý một chủ đề tích cực, mang tính học hỏi khác.
-
-4. Trả lời ngắn gọn chỉ trong 150 từ tiếng Việt, dễ hiểu, bằng tiếng Việt, xưng hô "mình" và "bạn", tôn trọng học sinh.
-
---------------- BẮT ĐẦU TÀI LIỆU NỘI BỘ ---------------
 Hệ thống Giáo dục Dạ Hợp – Thông tin tóm lược
 
 Dạ Hợp Education được thành lập từ năm 2016, khởi đầu là trường mầm non Hoa Dạ Hợp. Hiện hệ thống đã phát triển thành mô hình liên cấp từ Mầm non, Tiểu học đến THCS, được phụ huynh và cộng đồng tại Hòa Bình tin tưởng.
@@ -94,6 +58,42 @@ Thông tin Liên hệ:
 Điện thoại: 02183.83.88.99 – Phòng Tuyển sinh.
 Hotline: 0356.756.971 (Cô Huyền).
 Email: dhe@dahop.edu.vn.
+`;
+
+/**
+ * Hỏi AI với prompt cố định + tài liệu nội bộ
+ */
+async function askSchoolAssistant(userText) {
+  try {
+    // Giới hạn tài liệu nội bộ nếu sau này bạn lỡ để quá dài
+    const MAX_DOC_CHARS = 10000;
+    const docSnippet =
+      INTERNAL_DOC.length > MAX_DOC_CHARS
+        ? INTERNAL_DOC.slice(0, MAX_DOC_CHARS)
+        : INTERNAL_DOC;
+
+    const systemPrompt = `
+Bạn là tư vấn của một trường học.
+
+Dưới đây là TÀI LIỆU NỘI BỘ do nhà trường cung cấp (coi như nguồn chính thống và mới nhất).
+
+NHIỆM VỤ CỦA BẠN:
+1. Khi trả lời, LUÔN ƯU TIÊN dựa vào nội dung trong tài liệu này nếu nó có liên quan đến câu hỏi.
+2. Nếu tài liệu KHÔNG nhắc tới nội dung câu hỏi, bạn có thể trả lời bằng kiến thức chung
+   nhưng hãy nói rõ: "Trong tài liệu nội bộ mình không thấy ghi cụ thể, mình sẽ trả lời theo hiểu biết chung..."
+
+3. Bạn CHỈ trả lời những nội dung mang tính giáo dục, phù hợp lứa tuổi 15 trở xuống.
+   Nếu câu hỏi có nội dung người lớn, tình dục chi tiết, bạo lực cực đoan, ma túy, cờ bạc,
+   chính trị phức tạp, tài chính đầu cơ, hoặc không mang tính giáo dục:
+   - Từ chối trả lời trực tiếp.
+   - Giải thích ngắn gọn vì sao chủ đề chưa phù hợp.
+   - Gợi ý học sinh hỏi thầy cô hoặc người lớn đáng tin cậy.
+   - Gợi ý một chủ đề tích cực, mang tính học hỏi khác.
+
+4. Trả lời ngắn gọn chỉ trong 150 từ tiếng Việt, dễ hiểu, bằng tiếng Việt, xưng hô "mình" và "bạn", tôn trọng học sinh.
+
+--------------- BẮT ĐẦU TÀI LIỆU NỘI BỘ ---------------
+${docSnippet}
 --------------- KẾT THÚC TÀI LIỆU NỘI BỘ ---------------
 `;
 
