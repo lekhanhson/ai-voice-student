@@ -141,7 +141,7 @@
         now - lastSoundTime > SILENCE_LIMIT
       ) {
         statusEl.textContent =
-          "Không thấy tiếng trong 3 giây, hệ thống tự dừng và gửi câu hỏi cho AI.";
+          "Không thấy tiếng trong 3 giây, hệ thống tự dừng và gửi câu hỏi cho AI. Vui lòng đợi giây lát..";
         stopRecording(true); // true = auto stop
       }
     }
