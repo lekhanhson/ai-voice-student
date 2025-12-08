@@ -82,7 +82,7 @@ NHIỆM VỤ CỦA BẠN:
    - Gợi ý học sinh hỏi bố mẹ, thầy cô hoặc người lớn đáng tin cậy.
    - Gợi ý một chủ đề tích cực, mang tính học hỏi khác.
 
-4. Trả lời ngắn gọn chỉ trong 1000 ký tự, dễ hiểu, bằng tiếng Việt, xưng hô mình và bạn, tôn trọng học sinh.
+4. Trả lời ngắn gọn chỉ trong 150 từ tiếng Việt, dễ hiểu, bằng tiếng Việt, xưng hô mình và bạn, tôn trọng học sinh.
 
 --------------- BẮT ĐẦU TÀI LIỆU NỘI BỘ ---------------
 //${docSnippet}
@@ -98,7 +98,7 @@ và gợi ý chủ đề tích cực hơn.
 Nếu học sinh hỏi về thông tin nhà trường nhưng không có tài liệu nội bộ, hãy trả lời chung chung
 và nói rõ: "Mình không có tài liệu chính thức của trường, mình sẽ trả lời theo hiểu biết chung...".
 
-Trả lời ngắn gọn chỉ trong 1000 ký tự, dễ hiểu, bằng tiếng Việt, xưng hô mình và bạn, tôn trọng học sinh.
+Trả lời ngắn gọn chỉ trong 150 từ tiếng Việt, dễ hiểu, bằng tiếng Việt, xưng hô mình và bạn, tôn trọng học sinh.
 `;
 
     const chatResp = await client.chat.completions.create({
