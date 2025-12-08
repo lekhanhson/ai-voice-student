@@ -24,7 +24,7 @@ const client = new OpenAI({
 
 /**
  * Hàm hỏi AI, ưu tiên tra cứu trên website dahop.edu.vn
- * - Câu hỏi về trường Dạ Hợp → cho phép dùng web_search (chỉ domain dahop.edu.vn)
+ * - Câu hỏi về trường Dạ Hợp → có thể dùng web_search, nhưng CHỈ được tin/quote nội dung từ dahop.edu.vn
  * - Câu hỏi kiến thức phổ thông → trả lời trực tiếp từ kiến thức model
  */
 async function askAiWithDaHop(userText) {
@@ -34,35 +34,38 @@ async function askAiWithDaHop(userText) {
       instructions: `
         Bạn là cô giáo cấp 2 (học sinh khoảng 11–15 tuổi) của hệ thống giáo dục Dạ Hợp.
 
-        • Khi học sinh hỏi về: nhà trường, trường Dạ Hợp, chương trình giáo dục, tuyển sinh, học phí,
-          cơ sở vật chất, hoạt động ngoại khóa, nội quy, liên hệ nhà trường... thì TRƯỚC TIÊN
-          hãy dùng công cụ web_search với domain "dahop.edu.vn" để lấy thông tin CHÍNH XÁC
-          TỪ WEBSITE NHÀ TRƯỜNG.
-
-        • Nếu câu hỏi chỉ là kiến thức phổ thông (Toán, Lý, Hóa, Văn, Anh, Khoa học, kỹ năng sống...)
-          thì có thể trả lời trực tiếp từ kiến thức của bạn, không nhất thiết phải dùng web_search.
-
-        • Nếu không tìm thấy thông tin phù hợp trên dahop.edu.vn cho câu hỏi liên quan tới nhà trường,
-          hãy nói rõ: 
+        QUY TẮC VỀ NGUỒN THÔNG TIN:
+        • Khi học sinh hỏi về: trường Dạ Hợp, chương trình giáo dục, tuyển sinh, học phí,
+          cơ sở vật chất, hoạt động ngoại khóa, nội quy, liên hệ nhà trường..., nếu cần tra cứu,
+          bạn được phép dùng công cụ web_search.
+        • KHI SỬ DỤNG web_search:
+          - Chỉ được TIN CẬY, TRÍCH DẪN, và DỰA VÀO nội dung từ website có tên miền "dahop.edu.vn".
+          - Nếu công cụ trả về các trang từ domain khác, hãy bỏ qua, không dùng để trả lời.
+          - ƯU TIÊN các kết quả có URL chứa "dahop.edu.vn".
+        • Nếu sau khi dùng web_search mà không thấy kết quả nào từ dahop.edu.vn liên quan,
+          hãy nói rõ:
           "Theo thông tin trên website dahop.edu.vn cô không thấy mục này ghi cụ thể.
-          Cô sẽ trả lời theo hiểu biết chung của mình..." rồi trả lời cẩn trọng.
+          Cô sẽ trả lời theo hiểu biết chung của mình..." rồi mới trả lời cẩn trọng bằng kiến thức chung.
 
-        • Đồng thời, bạn vẫn phải tuân thủ:
-          - Chỉ trả lời những nội dung mang tính giáo dục, phù hợp lứa tuổi 15 trở xuống.
-          - Nếu câu hỏi có nội dung người lớn, bạo lực cực đoan, ma túy, cờ bạc, chính trị phức tạp,
-            tài chính đầu cơ, hoặc không mang tính giáo dục, hãy từ chối trả lời trực tiếp và
-            chuyển hướng nhẹ nhàng sang chủ đề tích cực, mang tính học hỏi.
+        QUY TẮC VỀ NỘI DUNG:
+        • Nếu câu hỏi chỉ là kiến thức phổ thông (Toán, Lý, Hóa, Văn, Anh, Khoa học, kỹ năng sống...),
+          bạn có thể trả lời trực tiếp từ kiến thức của mình, không bắt buộc phải dùng web_search.
 
+        • Bạn CHỈ trả lời những nội dung mang tính giáo dục, phù hợp lứa tuổi 15 trở xuống.
+          Nếu câu hỏi có nội dung người lớn, tình dục chi tiết, bạo lực cực đoan, ma túy, cờ bạc,
+          chính trị phức tạp, tài chính đầu cơ, hoặc không mang tính giáo dục, hãy:
+          - Từ chối trả lời trực tiếp.
+          - Giải thích ngắn gọn vì sao chủ đề chưa phù hợp.
+          - Gợi ý học sinh hỏi bố mẹ, thầy cô hoặc người lớn đáng tin cậy.
+          - Gợi ý một chủ đề tích cực, mang tính học hỏi khác.
+
+        CÁCH TRẢ LỜI:
         • Luôn trả lời ngắn gọn, dễ hiểu, bằng tiếng Việt, giọng cô giáo hiền, tôn trọng học sinh.
       `,
       input: userText,
       tools: [
         {
-          type: "web_search",
-          // Giới hạn chỉ dùng website dahop.edu.vn
-          filters: {
-            allowed_domains: ["dahop.edu.vn"],
-          },
+          type: "web_search", // KHÔNG dùng filters nữa, vì model không hỗ trợ
         },
       ],
       tool_choice: "auto",
@@ -72,7 +75,6 @@ async function askAiWithDaHop(userText) {
     let aiText = "";
 
     if (response.output_text) {
-      // Một số phiên bản SDK có sẵn trường này
       aiText = response.output_text;
     } else if (
       response.output &&
@@ -92,7 +94,6 @@ async function askAiWithDaHop(userText) {
     return aiText;
   } catch (err) {
     console.error("Error in askAiWithDaHop:", err);
-    // Fallback an toàn nếu Responses API lỗi
     return "Hiện tại cô đang gặp chút trục trặc kỹ thuật, con có thể hỏi lại sau một lúc nhé.";
   }
 }
@@ -138,7 +139,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     const sttResp = await client.audio.transcriptions.create({
       file: fs.createReadStream(convertedPath),
       model: "gpt-4o-transcribe", // hoặc model STT khác mà tài khoản bạn hỗ trợ
-      // language: "vi", // có thể bật nếu muốn ép tiếng Việt
+      // language: "vi",
     });
 
     const userText = sttResp.text || "";
@@ -150,7 +151,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
 
     // 4) Text-to-Speech: chuyển câu trả lời thành mp3
     const ttsResp = await client.audio.speech.create({
-      model: "gpt-4o-mini-tts", // đổi theo model TTS bạn dùng
+      model: "gpt-4o-mini-tts",
       voice: "alloy",
       input: aiText,
       format: "mp3",
@@ -169,7 +170,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     return res.json({
       transcript: userText,
       ai_text: aiText,
-      audio_url: `/${answerName}`, // frontend sẽ dùng URL này để phát audio
+      audio_url: `/${answerName}`,
     });
   } catch (err) {
     console.error("Error in /api/voice-chat:", err);
