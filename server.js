@@ -161,7 +161,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     const sttResp = await client.audio.transcriptions.create({
       file: fs.createReadStream(convertedPath),
       model: "gpt-4o-transcribe",
-      // language: "vi",
+      language: "vi",
     });
 
     const userText = sttResp.text || "";
