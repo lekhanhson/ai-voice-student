@@ -2,64 +2,144 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Trợ Giúp Học Sinh DHE: Tương tác trực tuyến.</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-      vertical-align: top;
-      min-height: 100vh;
-      background: #f4f7ff;
-    }
-    .card {
-      background: white;
-      padding: 24px 32px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      max-width: 480px;
-      width: 100%;
-      text-align: center;
+  <title>AI Trợ Giúp Học Sinh – Nói & Nghe</title>
+ <style>
+  /* Reset + mobile-first layout */
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f7ff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .card {
+    background: white;
+    width: 100%;
+    max-width: 520px;
+    margin: 16px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    margin: 0 0 6px;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: #4b5563;
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  button {
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: none;
+    font-size: 1rem;
+    margin: 6px;
+    cursor: pointer;
+  }
+
+  #startBtn {
+    background: #2563eb;
+    color: #fff;
+  }
+  #stopBtn {
+    background: #ef4444;
+    color: #fff;
+  }
+
+  #status {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+    min-height: 18px;
+  }
+
+  #avatar-wrapper {
+    margin-top: 14px;
+  }
+
+  /* Avatar scale for mobile */
+  #avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Waveform */
+  #waveformCanvas {
+    margin-top: 16px;
+    border-radius: 12px;
+    background: #e5e7eb;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  #transcript,
+  #aiText {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f9fafb;
+    font-size: 0.9rem;
+    text-align: left;
+    white-space: pre-wrap;
+  }
+
+  audio {
+    margin-top: 12px;
+    width: 100%;
+  }
+
+  /* ====== MEDIA QUERIES ====== */
+
+  /* Tablet & desktop: scale up */
+  @media (min-width: 600px) {
+    h2 {
+      font-size: 1.6rem;
     }
     button {
+      font-size: 1.1rem;
       padding: 12px 24px;
-      border-radius: 999px;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      margin: 8px;
     }
-    #startBtn {
-      background: #2563eb;
-      color: #fff;
+    #avatar {
+      width: 140px;
+      height: 140px;
     }
-    #stopBtn {
-      background: #ef4444;
-      color: #fff;
+    #waveformCanvas {
+      max-width: 360px;
+      height: 60px;
     }
-    #status {
-      margin-top: 12px;
-      font-size: 14px;
-      color: #555;
+  }
+
+  @media (min-width: 900px) {
+    .card {
+      padding: 28px 36px;
     }
-    #transcript, #aiText {
-      margin-top: 12px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: #f9fafb;
-      font-size: 14px;
-      text-align: left;
-      white-space: pre-wrap;
+    #avatar {
+      width: 160px;
+      height: 160px;
     }
-  </style>
+    p {
+      font-size: 1rem;
+    }
+  }
+</style>
+
 </head>
 <body>
 
 <div class="card">
-  <h2>🎧 Hệ thống Trợ Giúp Học Sinh</h2>
-  <p>Để bắt đầu, hãy bấm <b>Start</b> rồi nói vào mic.<br>Khi nói xong hãy bấm <b>Stop</b> (hoặc ngưng trong 3 giây),<br>Hệ thống sẽ biên tập thông tin và trả lời bằng giọng nói.</p>
+  <h2>🎧 AI Trợ Giúp Học Sinh</h2>
+  <p>Bấm <b>Start</b> rồi nói vào micro. Hệ thống sẽ tự dừng nếu im lặng 3 giây và cô AI sẽ trả lời cho bạn.</p>
 
   <div>
     <button id="startBtn">🎙 Start</button>
@@ -68,23 +148,61 @@
 
   <div id="status">Chưa ghi âm.</div>
 
+  <!-- Avatar vui nhộn -->
+  <div id="avatar-wrapper">
+    <svg id="avatar" width="140" height="140" viewBox="0 0 140 140">
+      <!-- Mặt -->
+      <circle cx="70" cy="70" r="55" fill="#fee2e2" />
+
+      <!-- Má hồng -->
+      <circle cx="48" cy="82" r="6" fill="#fecaca" />
+      <circle cx="92" cy="82" r="6" fill="#fecaca" />
+
+      <!-- Mắt -->
+      <ellipse id="leftEye" cx="54" cy="58" rx="5" ry="7" fill="#111827" />
+      <ellipse id="rightEye" cx="86" cy="58" rx="5" ry="7" fill="#111827" />
+
+      <!-- Lông mày -->
+      <line id="leftBrow" x1="44" y1="45" x2="64" y2="43"
+            stroke="#111827" stroke-width="3" stroke-linecap="round" />
+      <line id="rightBrow" x1="76" y1="43" x2="96" y2="45"
+            stroke="#111827" stroke-width="3" stroke-linecap="round" />
+
+      <!-- Miệng (sẽ animate khi AI nói) -->
+      <rect id="mouth"
+            x="48"
+            y="80"
+            width="44"
+            height="6"
+            rx="3"
+            fill="#b91c1c" />
+    </svg>
+  </div>
+
+  <!-- Waveform khi đang ghi âm -->
+  <canvas id="waveformCanvas"
+          width="280"
+          height="60"
+          style="margin-top:16px;border-radius:12px;background:#e5e7eb;"></canvas>
+
   <div id="transcript"><b>Học sinh nói:</b> (chưa có)</div>
   <div id="aiText"><b>AI trả lời:</b> (chưa có)</div>
 
-  <audio id="audioPlayer" controls style="margin-top: 12px; width: 100%; display:none;"></audio>
+  <audio id="audioPlayer" controls style="display:none;"></audio>
 </div>
 
 <script>
+  // === Biến ghi âm & waveform ===
   let mediaRecorder;
   let audioChunks = [];
 
-  let audioContext;
-  let analyser;
+  let audioContextRecord;
+  let analyserRecord;
   let microphone;
-  let animationId = null;
+  let waveformAnimationId = null;
 
   let lastSoundTime = 0;
-  const SILENCE_LIMIT = 3000; // 3 giây
+  const SILENCE_LIMIT = 3000; // 3 giây im lặng thì auto stop
 
   const startBtn = document.getElementById("startBtn");
   const stopBtn = document.getElementById("stopBtn");
@@ -93,15 +211,8 @@
   const aiTextEl = document.getElementById("aiText");
   const audioPlayer = document.getElementById("audioPlayer");
 
-  // ===== 🎨 TẠO CANVAS SÓNG ÂM (WAVEFORM) =====
-  const waveformCanvas = document.createElement("canvas");
-  waveformCanvas.width = 260;
-  waveformCanvas.height = 60;
-  waveformCanvas.style.marginTop = "16px";
-  waveformCanvas.style.borderRadius = "12px";
-  waveformCanvas.style.background = "#e5e7eb";
-  document.querySelector(".card").appendChild(waveformCanvas);
-
+  // Canvas waveform
+  const waveformCanvas = document.getElementById("waveformCanvas");
   const wctx = waveformCanvas.getContext("2d");
 
   function clearWaveform() {
@@ -109,45 +220,100 @@
     wctx.fillStyle = "#e5e7eb";
     wctx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
   }
-
   clearWaveform();
 
-  // Vẽ sóng âm giống Siri (đơn giản hoá)
+  // === Avatar elements ===
+  const mouth = document.getElementById("mouth");
+  const leftEye = document.getElementById("leftEye");
+  const rightEye = document.getElementById("rightEye");
+  const leftBrow = document.getElementById("leftBrow");
+  const rightBrow = document.getElementById("rightBrow");
+
+  // Mặc định
+  const defaultEyeRx = 5;
+  const defaultEyeRy = 7;
+  const defaultLeftBrow = { y1: 45, y2: 43 };
+  const defaultRightBrow = { y1: 43, y2: 45 };
+
+  let thinking = false;
+  let blinkIntervalId = null;
+
+  function setAvatarThinking(on) {
+    thinking = on;
+    if (on) {
+      // Nhướng mày lên nhẹ
+      leftBrow.setAttribute("y1", (defaultLeftBrow.y1 - 4).toString());
+      leftBrow.setAttribute("y2", (defaultLeftBrow.y2 - 4).toString());
+      rightBrow.setAttribute("y1", (defaultRightBrow.y1 - 4).toString());
+      rightBrow.setAttribute("y2", (defaultRightBrow.y2 - 4).toString());
+
+      // Blink thường xuyên hơn
+      if (!blinkIntervalId) {
+        blinkIntervalId = setInterval(() => {
+          blinkOnce();
+        }, 800);
+      }
+    } else {
+      // Reset mày & mắt
+      leftBrow.setAttribute("y1", defaultLeftBrow.y1.toString());
+      leftBrow.setAttribute("y2", defaultLeftBrow.y2.toString());
+      rightBrow.setAttribute("y1", defaultRightBrow.y1.toString());
+      rightBrow.setAttribute("y2", defaultRightBrow.y2.toString());
+
+      leftEye.setAttribute("ry", defaultEyeRy.toString());
+      rightEye.setAttribute("ry", defaultEyeRy.toString());
+
+      if (blinkIntervalId) {
+        clearInterval(blinkIntervalId);
+        blinkIntervalId = null;
+      }
+    }
+  }
+
+  function blinkOnce() {
+    // Nhắm mắt
+    leftEye.setAttribute("ry", "1");
+    rightEye.setAttribute("ry", "1");
+    setTimeout(() => {
+      // Mở lại
+      leftEye.setAttribute("ry", defaultEyeRy.toString());
+      rightEye.setAttribute("ry", defaultEyeRy.toString());
+    }, 120);
+  }
+
+  // === Vẽ waveform khi đang ghi âm ===
   function drawWaveform() {
-    if (!analyser) return;
+    if (!analyserRecord) return;
 
-    const bufferLength = analyser.fftSize;
+    const bufferLength = analyserRecord.fftSize;
     const dataArray = new Uint8Array(bufferLength);
-    analyser.getByteTimeDomainData(dataArray);
+    analyserRecord.getByteTimeDomainData(dataArray);
 
-    // Tính độ "ồn" để nhận biết có tiếng nói
+    // Tính độ "ồn" để nhận xem có tiếng nói
     let total = 0;
     for (let i = 0; i < bufferLength; i++) {
       const v = dataArray[i] - 128;
       total += Math.abs(v);
     }
-    const avg = total / bufferLength; // ~0 → im lặng, cao hơn → có tiếng
+    const avg = total / bufferLength; // 0 ~ im lặng
     const volumeNorm = avg / 128;     // 0–1
 
-    // Nếu âm lượng đủ lớn → coi như có tiếng nói
     const now = Date.now();
     if (volumeNorm > 0.05) {
       lastSoundTime = now;
-      statusEl.textContent = "Đang ghi âm... mời đặt câu hỏi.";
+      statusEl.textContent = "Đang ghi âm... con cứ nói tự nhiên nhé.";
     } else {
-      // Nếu im lặng > 3 giây → auto STOP
       if (
         mediaRecorder &&
         mediaRecorder.state === "recording" &&
         now - lastSoundTime > SILENCE_LIMIT
       ) {
         statusEl.textContent =
-          "Không thấy tiếng trong 3 giây, hệ thống tự dừng và gửi câu hỏi cho AI. Vui lòng đợi giây lát..";
-        stopRecording(true); // true = auto stop
+          "Không thấy tiếng trong 3 giây, hệ thống tự dừng và gửi câu hỏi cho AI.";
+        stopRecording(true);
       }
     }
 
-    // Vẽ waveform
     const width = waveformCanvas.width;
     const height = waveformCanvas.height;
 
@@ -155,6 +321,7 @@
     wctx.fillStyle = "#e5e7eb";
     wctx.fillRect(0, 0, width, height);
 
+    // Đường waveform
     wctx.lineWidth = 2;
     wctx.strokeStyle = "#2563eb";
     wctx.beginPath();
@@ -163,7 +330,7 @@
     let x = 0;
 
     for (let i = 0; i < bufferLength; i++) {
-      const v = dataArray[i] / 255.0; // 0–1
+      const v = dataArray[i] / 255.0;
       const y = v * height;
 
       if (i === 0) {
@@ -174,19 +341,18 @@
 
       x += sliceWidth;
     }
-
     wctx.stroke();
 
-    // Vẽ "dải" ánh sáng ở giữa như Siri
-    wctx.fillStyle = "rgba(37, 99, 235, 0.15)";
+    // Dải ánh sáng ở giữa
+    wctx.fillStyle = "rgba(37, 99, 235, 0.18)";
     const centerY = height / 2;
-    const amp = Math.max(4, volumeNorm * (height / 2));
+    const amp = Math.max(4, volumeNorm * (height / 1.2));
     wctx.fillRect(0, centerY - amp / 2, width, amp);
 
-    animationId = requestAnimationFrame(drawWaveform);
+    waveformAnimationId = requestAnimationFrame(drawWaveform);
   }
 
-  // ===== 🎙 BẮT ĐẦU GHI ÂM =====
+  // === Bắt đầu ghi âm ===
   startBtn.onclick = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -201,37 +367,31 @@
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
         sendAudioToServer(audioBlob);
-        // Dừng waveform
-        if (animationId) cancelAnimationFrame(animationId);
-        animationId = null;
+
+        if (waveformAnimationId) cancelAnimationFrame(waveformAnimationId);
+        waveformAnimationId = null;
         clearWaveform();
-        // Tắt audioContext cho đỡ tốn tài nguyên
-        if (audioContext) {
-          audioContext.close();
-          audioContext = null;
+
+        if (audioContextRecord) {
+          audioContextRecord.close();
+          audioContextRecord = null;
         }
       };
 
       mediaRecorder.start();
-      statusEl.textContent = "Đang ghi âm... mời đặt câu hỏi.";
-
+      statusEl.textContent = "Đang ghi âm... con hãy đặt câu hỏi.";
       startBtn.disabled = true;
       stopBtn.disabled = false;
 
-      // Thiết lập Web Audio để đo sóng âm
-      const AudioCtx =
-        window.AudioContext || window.webkitAudioContext;
-      audioContext = new AudioCtx();
-      microphone = audioContext.createMediaStreamSource(stream);
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 512;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      audioContextRecord = new AudioCtx();
+      microphone = audioContextRecord.createMediaStreamSource(stream);
+      analyserRecord = audioContextRecord.createAnalyser();
+      analyserRecord.fftSize = 512;
 
-      microphone.connect(analyser);
-
-      // Ghi nhận thời điểm có tiếng nói gần nhất
+      microphone.connect(analyserRecord);
       lastSoundTime = Date.now();
 
-      // Bắt đầu vòng lặp vẽ waveform
       drawWaveform();
     } catch (err) {
       console.error(err);
@@ -240,7 +400,7 @@
     }
   };
 
-  // ===== ⏹ HÀM STOP CHUNG (dùng cho cả auto stop & click stop) =====
+  // === Hàm dừng ghi chung ===
   function stopRecording(isAuto = false) {
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.stop();
@@ -253,47 +413,44 @@
     }
   }
 
-  // Nút Stop do người dùng bấm
   stopBtn.onclick = () => {
     stopRecording(false);
   };
 
-  // ===== 📤 GỬI ÂM THANH LÊN SERVER =====
-  async function sendAudioToServer(audioBlob) {
-    try {
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "speech.webm");
+  // === Lip sync avatar khi AI nói ===
+  let talkAudioCtx = null;
+  let talkAnalyser = null;
+  let talkSource = null;
+  let talkAnimId = null;
 
-      const response = await fetch("/api/voice-chat", {
-        method: "POST",
-        body: formData,
-      });
+  function setupTalkAnalyser() {
+    if (talkAudioCtx) return;
 
-      if (!response.ok) throw new Error("Server error");
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    talkAudioCtx = new AudioCtx();
+    talkSource = talkAudioCtx.createMediaElementSource(audioPlayer);
+    talkAnalyser = talkAudioCtx.createAnalyser();
+    talkAnalyser.fftSize = 256;
 
-      const data = await response.json();
-
-      transcriptEl.innerHTML =
-        "<b>Học sinh nói:</b> " + (data.transcript || "(không nhận được)");
-      aiTextEl.innerHTML =
-        "<b>AI trả lời:</b> " + (data.ai_text || "(không nhận được)");
-
-      if (data.audio_url) {
-        audioPlayer.src = data.audio_url;
-        audioPlayer.style.display = "block";
-        audioPlayer.play();
-      } else {
-        audioPlayer.style.display = "none";
-      }
-
-      statusEl.textContent = "Đã xử lý xong.";
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = "Có lỗi khi gửi âm thanh lên server.";
-    }
+    talkSource.connect(talkAnalyser);
+    // Không cần connect tới destination, audioPlayer tự phát
   }
-</script>
 
+  function animateMouth() {
+    if (!talkAnalyser) return;
 
-</body>
-</html>
+    const bufferLength = talkAnalyser.fftSize;
+    const dataArray = new Uint8Array(bufferLength);
+    talkAnalyser.getByteFrequencyData(dataArray);
+
+    let sum = 0;
+    for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
+    const avg = sum / bufferLength;
+    const volume = avg / 255; // 0–1
+
+    // Miệng cao tối đa 22px, tối thiểu 4px
+    const minH = 4;
+    const maxH = 22;
+    const h = minH + (maxH - minH) * volume;
+
+    mouth.setAttribute("height", h.toS
