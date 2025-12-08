@@ -23,11 +23,86 @@ const client = new OpenAI({
 });
 
 /**
+ * Hàm hỏi AI, ưu tiên tra cứu trên website dahop.edu.vn
+ * - Câu hỏi về trường Dạ Hợp → cho phép dùng web_search (chỉ domain dahop.edu.vn)
+ * - Câu hỏi kiến thức phổ thông → trả lời trực tiếp từ kiến thức model
+ */
+async function askAiWithDaHop(userText) {
+  try {
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      instructions: `
+        Bạn là cô giáo cấp 2 (học sinh khoảng 11–15 tuổi) của hệ thống giáo dục Dạ Hợp.
+
+        • Khi học sinh hỏi về: nhà trường, trường Dạ Hợp, chương trình giáo dục, tuyển sinh, học phí,
+          cơ sở vật chất, hoạt động ngoại khóa, nội quy, liên hệ nhà trường... thì TRƯỚC TIÊN
+          hãy dùng công cụ web_search với domain "dahop.edu.vn" để lấy thông tin CHÍNH XÁC
+          TỪ WEBSITE NHÀ TRƯỜNG.
+
+        • Nếu câu hỏi chỉ là kiến thức phổ thông (Toán, Lý, Hóa, Văn, Anh, Khoa học, kỹ năng sống...)
+          thì có thể trả lời trực tiếp từ kiến thức của bạn, không nhất thiết phải dùng web_search.
+
+        • Nếu không tìm thấy thông tin phù hợp trên dahop.edu.vn cho câu hỏi liên quan tới nhà trường,
+          hãy nói rõ: 
+          "Theo thông tin trên website dahop.edu.vn cô không thấy mục này ghi cụ thể.
+          Cô sẽ trả lời theo hiểu biết chung của mình..." rồi trả lời cẩn trọng.
+
+        • Đồng thời, bạn vẫn phải tuân thủ:
+          - Chỉ trả lời những nội dung mang tính giáo dục, phù hợp lứa tuổi 15 trở xuống.
+          - Nếu câu hỏi có nội dung người lớn, bạo lực cực đoan, ma túy, cờ bạc, chính trị phức tạp,
+            tài chính đầu cơ, hoặc không mang tính giáo dục, hãy từ chối trả lời trực tiếp và
+            chuyển hướng nhẹ nhàng sang chủ đề tích cực, mang tính học hỏi.
+
+        • Luôn trả lời ngắn gọn, dễ hiểu, bằng tiếng Việt, giọng cô giáo hiền, tôn trọng học sinh.
+      `,
+      input: userText,
+      tools: [
+        {
+          type: "web_search",
+          // Giới hạn chỉ dùng website dahop.edu.vn
+          filters: {
+            allowed_domains: ["dahop.edu.vn"],
+          },
+        },
+      ],
+      tool_choice: "auto",
+    });
+
+    // Cố gắng lấy text output một cách an toàn
+    let aiText = "";
+
+    if (response.output_text) {
+      // Một số phiên bản SDK có sẵn trường này
+      aiText = response.output_text;
+    } else if (
+      response.output &&
+      Array.isArray(response.output) &&
+      response.output[0] &&
+      response.output[0].content &&
+      Array.isArray(response.output[0].content) &&
+      response.output[0].content[0] &&
+      response.output[0].content[0].text
+    ) {
+      aiText = response.output[0].content[0].text;
+    } else {
+      aiText =
+        "Cô chưa nghe rõ câu hỏi, con có thể nói lại chậm hơn một chút được không?";
+    }
+
+    return aiText;
+  } catch (err) {
+    console.error("Error in askAiWithDaHop:", err);
+    // Fallback an toàn nếu Responses API lỗi
+    return "Hiện tại cô đang gặp chút trục trặc kỹ thuật, con có thể hỏi lại sau một lúc nhé.";
+  }
+}
+
+/**
  * POST /api/voice-chat
  * Nhận audio (webm) từ trình duyệt:
  * 1. Convert webm -> mp3
  * 2. Gửi mp3 lên OpenAI để nhận text (STT)
- * 3. Dùng text gọi chat model để lấy câu trả lời
+ * 3. Dùng text gọi Responses API (ưu tiên web dahop.edu.vn) để lấy câu trả lời
  * 4. Dùng TTS để chuyển câu trả lời thành mp3
  * 5. Trả về transcript + text + audio_url
  */
@@ -69,37 +144,8 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     const userText = sttResp.text || "";
     console.log("User said:", userText);
 
-    // 3) Chat: AI tạo câu trả lời text
-    const chatResp = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Bạn là cô giáo cấp 2 (học sinh khoảng 11–15 tuổi), chỉ trả lời những nội dung mang tính giáo dục, \
-phù hợp lứa tuổi 15 trở xuống. Chủ đề ưu tiên: kiến thức trong chương trình phổ thông, kỹ năng sống cơ bản, \
-thái độ học tập, định hướng lành mạnh. \
-\
-Nếu học sinh hỏi về các chủ đề không phù hợp với lứa tuổi (ví dụ: tình dục chi tiết, bạo lực cực đoan, \
-ma túy, cờ bạc, nội dung người lớn, chính trị phức tạp, tài chính đầu cơ, triết lý nặng nề, tin giả, \
-hoặc những thứ không mang tính giáo dục), bạn phải từ chối trả lời trực tiếp và chuyển hướng nhẹ nhàng. \
-\
-Khi từ chối, hãy dùng giọng nhẹ nhàng, tôn trọng: \
-- Giải thích ngắn gọn vì sao chủ đề này không phù hợp với lứa tuổi hiện tại. \
-- Gợi ý học sinh nên trao đổi với bố mẹ, thầy cô hoặc chuyên gia đáng tin cậy. \
-- Gợi ý một chủ đề tích cực, mang tính học hỏi khác để hai cô trò cùng nói chuyện.",
-        },
-        {
-          role: "user",
-          content: userText || "Xin chào cô ơi!",
-        },
-      ],
-    });
-
-    const aiText =
-      chatResp.choices?.[0]?.message?.content ||
-      "Cô chưa nghe rõ câu hỏi, con có thể nói lại được không?";
-
+    // 3) Hỏi AI, ưu tiên thông tin trên website dahop.edu.vn
+    const aiText = await askAiWithDaHop(userText);
     console.log("AI answer:", aiText);
 
     // 4) Text-to-Speech: chuyển câu trả lời thành mp3
