@@ -25,7 +25,7 @@ const client = new OpenAI({
 
 // ========= 📄 LOAD TÀI LIỆU PDF NỘI BỘ =========
 let schoolDocText = "";
-const pdfPath = path.join(__dirname, "public", "school-doc.pdf"); // Đổi tên file nếu bạn đặt khác
+const pdfPath = path.join(__dirname, "public", "school-doc.pdf"); // ĐỔI TÊN FILE Ở ĐÂY nếu bạn đặt khác
 
 (async () => {
   try {
@@ -34,7 +34,7 @@ const pdfPath = path.join(__dirname, "public", "school-doc.pdf"); // Đổi tên
       const data = await pdfParse(dataBuffer);
       schoolDocText = (data.text || "").trim();
       console.log(
-        "Đã load PDF nội bộ. Độ dài text:",
+        "✅ Đã load PDF nội bộ. Độ dài text:",
         schoolDocText.length,
         "ký tự"
       );
@@ -46,19 +46,16 @@ const pdfPath = path.join(__dirname, "public", "school-doc.pdf"); // Đổi tên
       );
     }
   } catch (err) {
-    console.error("Lỗi khi đọc/parse PDF:", err);
+    console.error("❌ Lỗi khi đọc/parse PDF:", err);
   }
 })();
 
 /**
- * Hàm hỏi AI, ưu tiên tra cứu trong tài liệu PDF nội bộ
- * - Nếu schoolDocText có nội dung → nhúng vào system prompt
- * - AI được dặn: ưu tiên PDF, nếu không có thì mới dùng kiến thức chung
+ * Hỏi AI, ưu tiên tra cứu trong tài liệu PDF nội bộ
  */
 async function askAiWithPdf(userText) {
   try {
-    // Cắt bớt text nếu quá dài để tránh tràn token (tuỳ bạn chỉnh)
-    const MAX_DOC_CHARS = 20000; // ~ vài nghìn token, đủ nhiều
+    const MAX_DOC_CHARS = 20000; // cắt bớt để tránh quá nhiều token
     const docSnippet =
       schoolDocText.length > MAX_DOC_CHARS
         ? schoolDocText.slice(0, MAX_DOC_CHARS)
@@ -68,11 +65,12 @@ async function askAiWithPdf(userText) {
 
     const systemContent = hasDoc
       ? `
-Bạn là tư vấn viên của một trường học.
+Bạn là tư vấn của một trường học.
 
 Dưới đây là TÀI LIỆU NỘI BỘ do nhà trường cung cấp (coi như nguồn chính thống và mới nhất).
+
 NHIỆM VỤ CỦA BẠN:
-1. Khi trả lời, LUÔN ƯU TIÊN dựa vào nội dung trong tài liệu này nếu nó có liên quan.
+1. Khi trả lời, LUÔN ƯU TIÊN dựa vào nội dung trong tài liệu này nếu nó có liên quan đến câu hỏi.
 2. Nếu tài liệu KHÔNG nhắc tới nội dung câu hỏi, bạn có thể trả lời bằng kiến thức chung
    nhưng hãy nói rõ: "Trong tài liệu nội bộ cô không thấy ghi cụ thể, cô sẽ trả lời theo hiểu biết chung của mình..."
 
@@ -91,7 +89,7 @@ ${docSnippet}
 --------------- KẾT THÚC TÀI LIỆU NỘI BỘ ---------------
 `
       : `
-Bạn là tư vấn viên của một trường học.
+Bạn là tư vấn của một trường học.
 Bạn CHỈ trả lời những nội dung mang tính giáo dục, phù hợp lứa tuổi 15 trở xuống.
 Nếu câu hỏi có nội dung người lớn, bạo lực cực đoan, ma túy, cờ bạc, chính trị phức tạp,
 tài chính đầu cơ, hoặc không mang tính giáo dục, hãy từ chối trả lời trực tiếp, giải thích ngắn gọn
@@ -123,19 +121,13 @@ Trả lời ngắn gọn, dễ hiểu, bằng tiếng Việt, giọng cô giáo 
 
     return aiText;
   } catch (err) {
-    console.error("Error in askAiWithPdf:", err);
+    console.error("❌ Error in askAiWithPdf:", err);
     return "Hiện tại cô đang gặp chút trục trặc kỹ thuật, con có thể hỏi lại sau một lúc nhé.";
   }
 }
 
 /**
  * POST /api/voice-chat
- * Nhận audio (webm) từ trình duyệt:
- * 1. Convert webm -> mp3
- * 2. Gửi mp3 lên OpenAI để nhận text (STT)
- * 3. Dùng text gọi chat model (ưu tiên PDF nội bộ) để lấy câu trả lời
- * 4. Dùng TTS để chuyển câu trả lời thành mp3
- * 5. Trả về transcript + text + audio_url
  */
 app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
   let inputPath;
@@ -147,45 +139,66 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     }
 
     // File webm do trình duyệt gửi lên
-    inputPath = req.file.path; // vd: uploads/abc123
-    convertedPath = inputPath + ".mp3"; // vd: uploads/abc123.mp3
+    inputPath = req.file.path;
+    convertedPath = inputPath + ".mp3";
 
     // 1) Convert WEBM -> MP3 bằng ffmpeg
     await new Promise((resolve, reject) => {
       ffmpeg(inputPath)
         .toFormat("mp3")
         .on("end", () => {
-          console.log("Converted to mp3:", convertedPath);
+          console.log("🎧 Converted to mp3:", convertedPath);
           resolve();
         })
         .on("error", (err) => {
-          console.error("FFmpeg error:", err);
+          console.error("❌ FFmpeg error:", err);
           reject(err);
         })
         .save(convertedPath);
     });
 
-    // 2) Gửi file mp3 lên OpenAI để chuyển giọng nói -> text
+    // 2) STT
     const sttResp = await client.audio.transcriptions.create({
       file: fs.createReadStream(convertedPath),
-      model: "gpt-4o-transcribe", // hoặc model STT khác mà tài khoản bạn hỗ trợ
+      model: "gpt-4o-transcribe",
       // language: "vi",
     });
 
     const userText = sttResp.text || "";
-    console.log("User said:", userText);
+    console.log("🗣 User said:", userText);
 
-    // 3) Hỏi AI, ưu tiên thông tin trong tài liệu PDF nội bộ
+    // 3) Hỏi AI dựa trên PDF nội bộ
     const aiText = await askAiWithPdf(userText);
-    console.log("AI answer:", aiText);
+    console.log("🤖 AI answer:", aiText);
 
-    // 4) Text-to-Speech: chuyển câu trả lời thành mp3
-    const ttsResp = await client.audio.speech.create({
-      model: "gpt-4o-mini-tts", // đổi theo model TTS bạn dùng
-      voice: "alloy",
-      input: aiText,
-      format: "mp3",
-    });
+    // 4) TTS – giới hạn độ dài để tránh quá nặng
+    const MAX_TTS_CHARS = 800;
+    const ttsInput =
+      aiText.length > MAX_TTS_CHARS
+        ? aiText.slice(0, MAX_TTS_CHARS) + "..."
+        : aiText;
+
+    console.log("🔊 Generating TTS, length:", ttsInput.length);
+
+    let audioBuffer;
+    try {
+      const ttsResp = await client.audio.speech.create({
+        model: "gpt-4o-mini-tts",
+        voice: "alloy",
+        input: ttsInput,
+        format: "mp3",
+      });
+
+      audioBuffer = Buffer.from(await ttsResp.arrayBuffer());
+    } catch (ttsErr) {
+      console.error("❌ TTS error:", ttsErr);
+      // Nếu TTS lỗi, vẫn trả text cho frontend (không audio)
+      return res.json({
+        transcript: userText,
+        ai_text: aiText,
+        audio_url: null,
+      });
+    }
 
     const publicDir = path.join(__dirname, "public");
     if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir);
@@ -193,17 +206,17 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
     const answerName = `ai-answer-${Date.now()}.mp3`;
     const answerPath = path.join(publicDir, answerName);
 
-    const buffer = Buffer.from(await ttsResp.arrayBuffer());
-    fs.writeFileSync(answerPath, buffer);
+    fs.writeFileSync(answerPath, audioBuffer);
+    console.log("💾 Saved TTS file:", answerPath);
 
     // 5) Trả kết quả cho frontend
     return res.json({
       transcript: userText,
       ai_text: aiText,
-      audio_url: `/${answerName}`, // frontend sẽ dùng URL này để phát audio
+      audio_url: `/${answerName}`,
     });
   } catch (err) {
-    console.error("Error in /api/voice-chat:", err);
+    console.error("❌ Error in /api/voice-chat:", err);
     return res.status(500).json({
       error: "Internal server error",
       detail: err.message,
@@ -215,7 +228,7 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
       if (convertedPath && fs.existsSync(convertedPath))
         fs.unlinkSync(convertedPath);
     } catch (cleanupErr) {
-      console.error("Error cleaning temp files:", cleanupErr);
+      console.error("⚠️ Error cleaning temp files:", cleanupErr);
     }
   }
 });
