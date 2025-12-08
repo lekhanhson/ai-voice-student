@@ -18,7 +18,6 @@
 
   .card {
     background: white;
-    width: 100%; 
     margin: 16px;
     padding: 20px;
     border-radius: 16px;
@@ -267,6 +266,14 @@
 
   // ===== 🎙 BẮT ĐẦU GHI ÂM =====
   startBtn.onclick = async () => {
+
+    try {
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;   // tua về đầu
+    } catch (e) {
+      console.log("Không thể dừng audio (không sao):", e);
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
