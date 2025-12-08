@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>AI Trợ Giúp Học Sinh DHE: Tương tác trực tuyến.</title>
- <style>
+  <style>
   /* Reset + mobile-first layout */
   body {
     font-family: system-ui, sans-serif;
@@ -130,8 +130,7 @@
       font-size: 1rem;
     }
   }
-</style>
-
+  </style>
 </head>
 <body>
 
@@ -170,6 +169,42 @@
   const transcriptEl = document.getElementById("transcript");
   const aiTextEl = document.getElementById("aiText");
   const audioPlayer = document.getElementById("audioPlayer");
+
+  // ====== PIPELINE TRẠNG THÁI B1..B6 ======
+  const pipelineSteps = [
+    "B1: Đang tải dữ liệu lên hệ thống...",
+    "B2: Đang chuyển giọng nói sang văn bản (mô hình ngôn ngữ lớn)...",
+    "B3: Đang truy cập và phân tích big data của nhà trường...",
+    "B4: Đang chuẩn hóa và biên tập câu trả lời...",
+    "B5: Đang tạo file âm thanh trả lời...",
+  ];
+  let progressTimer = null;
+  let progressIndex = 0;
+
+  function startProcessingProgress() {
+    // reset
+    stopProcessingProgress();
+    progressIndex = 0;
+    statusEl.textContent = pipelineSteps[0];
+
+    progressTimer = setInterval(() => {
+      progressIndex++;
+      if (progressIndex < pipelineSteps.length) {
+        statusEl.textContent = pipelineSteps[progressIndex];
+      } else {
+        // đã đi hết các bước mô phỏng, giữ bước cuối
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+    }, 1200); // 1.2s mỗi bước cho cảm giác "đang chạy pipeline"
+  }
+
+  function stopProcessingProgress() {
+    if (progressTimer) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+    }
+  }
 
   // ===== 🎨 TẠO CANVAS SÓNG ÂM (WAVEFORM) =====
   const waveformCanvas = document.createElement("canvas");
@@ -220,7 +255,7 @@
         now - lastSoundTime > SILENCE_LIMIT
       ) {
         statusEl.textContent =
-          "Không thấy tiếng trong 3 giây, hệ thống tự dừng và gửi câu hỏi cho AI. Vui lòng đợi giây lát..";
+          "Không thấy tiếng trong 3 giây, hệ thống tự dừng và gửi câu hỏi cho AI.";
         stopRecording(true); // true = auto stop
       }
     }
@@ -266,10 +301,12 @@
 
   // ===== 🎙 BẮT ĐẦU GHI ÂM =====
   startBtn.onclick = async () => {
-
     try {
+      // Khi bắt đầu ghi âm mới → dừng phát audio cũ & reset pipeline
+      stopProcessingProgress();
+
       audioPlayer.pause();
-      audioPlayer.currentTime = 0;   // tua về đầu
+      audioPlayer.currentTime = 0;
     } catch (e) {
       console.log("Không thể dừng audio (không sao):", e);
     }
@@ -286,6 +323,8 @@
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        // Bắt đầu mô phỏng pipeline xử lý ngay khi stop xong
+        startProcessingProgress();
         sendAudioToServer(audioBlob);
         // Dừng waveform
         if (animationId) cancelAnimationFrame(animationId);
@@ -334,7 +373,7 @@
       startBtn.disabled = false;
 
       if (!isAuto) {
-        statusEl.textContent = "Đang xử lý...";
+        statusEl.textContent = "Đang kết thúc ghi âm, chuẩn bị gửi lên hệ thống...";
       }
     }
   }
@@ -359,6 +398,9 @@
 
       const data = await response.json();
 
+      // Ngay khi có kết quả → dừng pipeline mô phỏng
+      stopProcessingProgress();
+
       transcriptEl.innerHTML =
         "<b>Học sinh nói:</b> " + (data.transcript || "(không nhận được)");
       aiTextEl.innerHTML =
@@ -367,19 +409,33 @@
       if (data.audio_url) {
         audioPlayer.src = data.audio_url;
         audioPlayer.style.display = "block";
+
+        // B5 đã xong, chuẩn bị phát
+        statusEl.textContent =
+          "B5: Đã tạo xong file âm thanh. B6: Đang phát file âm thanh...";
+
         audioPlayer.play();
+
+        audioPlayer.onplay = () => {
+          statusEl.textContent = "B6: Đang phát file âm thanh trả lời...";
+        };
+
+        audioPlayer.onended = () => {
+          statusEl.textContent =
+            "Hoàn thành: Đã phát xong. Bạn có thể bấm Start để hỏi tiếp.";
+        };
       } else {
         audioPlayer.style.display = "none";
+        statusEl.textContent =
+          "Đã xử lý xong (chưa tạo được âm thanh, vui lòng đọc câu trả lời trên màn hình).";
       }
-
-      statusEl.textContent = "Đã xử lý xong.";
     } catch (err) {
       console.error(err);
+      stopProcessingProgress();
       statusEl.textContent = "Có lỗi khi gửi âm thanh lên server.";
     }
   }
 </script>
-
 
 </body>
 </html>
