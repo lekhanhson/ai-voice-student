@@ -28,33 +28,226 @@ const client = new OpenAI({
  * Đừng quá dài, khoảng 1–2 trang A4 là ổn.
  */
 const INTERNAL_DOC = `
-Hệ thống Giáo dục Dạ Hợp – Thông tin tóm lược
-
-Dạ Hợp Education được thành lập từ năm 2016, khởi đầu là trường mầm non Hoa Dạ Hợp. Hiện hệ thống đã phát triển thành mô hình liên cấp từ Mầm non, Tiểu học đến THCS, được phụ huynh và cộng đồng tại Hòa Bình tin tưởng.
-
-Điểm mạnh chương trình
-Hệ thống tập trung vào 3 trụ cột:
-Tiếng Anh: Học sinh được học tiếng Anh giao tiếp hàng ngày với giáo viên Việt Nam và giáo viên nước ngoài, nhiều hoạt động trải nghiệm 100% tiếng Anh, thời lượng tới khoảng 10 tiết/tuần.
-STEM: Chương trình STEM xuyên suốt từ mầm non (Eco STEM – sống thân thiện với môi trường) tới phổ thông, hợp tác với các đối tác STEM uy tín.
-Kỹ năng sống: Nhiều hoạt động trải nghiệm theo tuần, tháng và theo khối/lớp, khuyến khích học sinh “được thử – được sai – được kiến tạo”, rèn luyện tự lập, tự học, tự chủ, tự tin.
-
-Đội ngũ & triết lý giáo dục:
-Đội ngũ gồm các thầy cô giàu kinh nghiệm và giáo viên trẻ nhiệt huyết; 100% giáo viên đạt chuẩn và trên chuẩn, sĩ số thấp để chăm sóc sát sao. Triết lý dựa trên thuyết Đa trí thông minh: tôn trọng sự khác biệt, phát triển hài hòa Nhân – Trí – Thể – Kỹ. Học sinh được định hướng trở thành người trung thực, biết ơn, yêu thương; giỏi ngoại ngữ, công nghệ; khỏe mạnh, bền bỉ, kỷ luật; có kỹ năng tự học, giao tiếp và sinh tồn.
-
-Cơ sở vật chất:
-Trường tọa lạc tại Tổ 8, phường Hữu Nghị, TP Hòa Bình, khuôn viên trong lành, an toàn. Phòng học rộng, nhiều phòng chức năng (âm nhạc, hội họa, thí nghiệm), thư viện sách Việt – Anh, sân chơi ngoài trời, bể bơi trong nhà, bếp ăn và khu vệ sinh thiết kế theo tiêu chuẩn cho trẻ em, đảm bảo vệ sinh và an toàn theo quy định trong nước và quốc tế.
-
-Chương trình và tuyển sinh:
-Học sinh học chương trình Bộ GD&ĐT kết hợp tiếng Anh Cambridge, STEM, kỹ năng sống, hoạt động trải nghiệm và phát triển thể lực. Hệ thống tuyển sinh các lớp từ 1 đến 9, yêu cầu sức khỏe tốt, hoàn thành chương trình ở cấp học trước và tham gia đánh giá năng lực (Toán, Tiếng Việt, Tiếng Anh, kỹ năng, phỏng vấn). Sĩ số mỗi lớp được giới hạn để đảm bảo chất lượng học tập.
-
-Các kiến thức được cung cấp:
-Chương trình Giáo dục Phổ thông: Học sinh được tham gia các lớp học Tiếng Việt - Sử - Địa - Giáo dục công dân bằng phương pháp tiếp cận mới, vừa học kiến thức vừa trải nghiệm thông qua các hoạt động ngoại khóa.
-Chương trình STEM: Xu hướng đưa giáo dục STEM vào trường học được khởi nguồn từ nước Mỹ vài chục năm trước giờ đây đã trở thành một xu hướng toàn cầu. Nhưng thay vì gia nhập trào lưu một cách bị động, DHE chủ động xây dựng chương trình STEM một cách bài bản và thống nhất giữa các cấp học. Ở lứa mầm non là chương trình Eco STEM để các con làm quen và có những nhận thức đầu tiên về việc sống thân thiện và gần gũi với môi trường. Ở các cấp học phổ thông, chương trình STEM là kết quả của sự hợp tác với những đối tác hàng đầu về STEM tại Việt Nam để xây dựng chương trình giáo dục chuyên sâu dành cho học sinh. Bên cạnh ý nghĩa về giáo dục tích hợp. STEM luôn là một nội dung nhận được rất nhiều sự hứng thú của học sinh.
-Chương trình Tiếng Anh: Tại DHE, chương trình giảng dạy tiếng Anh chú trọng vào giao tiếp và thực hành cho học sinh với tối đa các hoạt động sử dụng ngôn ngữ nói cho học sinh xuyên suốt tất cả các lớp của mọi cấp học. Bên cạnh các tiết học tiếng Anh hàng ngày với các giáo viên Việt Nam cũng như nước ngoài cơ hữu của Hệ thống, những giờ trải nghiệm tiếng Anh hàng tháng với yêu cầu 100% tiếng Anh sẽ buộc các con phải vận dụng khả năng tiếng Anh giao tiếp của mình. Những hoạt động dã ngoại với giáo viên người nước ngoài cũng được lồng ghép nhằm giúp các con đem các kiến thức đã học ra áp dụng vào thực tế. Thời lượng tiếng Anh vượt trội lên tới 10 tiết mỗi tuần, cùng với những sự kiện tiếng Anh đều đặn, kỹ năng tiếng Anh của các con sẽ được nâng lên một cách tự nhiên, giống như tiếng mẹ đẻ. Tại DHE, chúng tôi không coi tiếng Anh là một ngoại ngữ, đó chỉ đơn giản cũng là một ngôn ngữ, giống như tiếng Việt. Khi trẻ nói càng nhiều, trẻ càng có cơ hội quen thuộc với ngôn ngữ đó. Năng lực ngôn ngữ phát triển như một hệ quả tất yếu.
-Kỹ năng sống: Một trong những căn bệnh khó chữa ở thời hiện đại là bệnh có lý thuyết nhưng thiếu kỹ năng do thiếu trải nghiệm, thực hành. Nhận thức được điều đó, DHE xây dựng các hoạt động liên tục cho học sinh trong tất cả thời gian ở trường áp dụng phương pháp học bằng trải nghiệm. Với chu trình học bằng trải nghiệm (chu trình Kolb), quá trình học gồm bốn giai đoạn: Trải nghiệm cụ thể; Quan sát, đánh giá sự việc; Khái quát các khái niệm; Chủ động thử nghiệm. Học tập qua trải nghiệm là một trong những phương pháp hiệu quả nhất để hướng dẫn học sinh vận dụng và phát triển tư duy sáng tạo. Với các nội dung học tập mang tính thực tiễn cao, học sinh nhận thấy luôn có nhiều giải pháp khác nhau cho mỗi tình huống, mỗi vấn đề cần giải quyết. Khi tham gia vào các hoạt động trải nghiệm thực tế, học sinh sẽ tìm ra những phương pháp tiếp cận, cách giải quyết vấn đề hiệu quả hơn. Từ đó, học sinh biết phân tích, so sánh và loại bỏ các phương pháp, cách giải quyết vấn đề thiếu hiệu quả. Trong học tập trải nghiệm, việc loại bỏ những phương pháp, cách thức “sai lầm” trở thành một phần vô cùng giá trị của quá trình học tập. Học sinh học được cách không sợ sai nhưng phải ghi nhớ để không lặp lại những sai lầm đó.
-
-Thông tin Liên hệ:
-Địa chỉ: Tổ 8, phường Hữu Nghị, TP Hòa Bình, tỉnh Hòa Bình.
+1) Thông tin chung
+Tên hệ thống: Hệ thống Giáo dục Dạ Hợp.
+Đơn vị trong hệ thống (theo dữ liệu gốc):
+Trường Mầm non Hoa Dạ Hợp.
+Trường Liên cấp Dạ Hợp (Tiểu học, THCS).
+Địa điểm được nêu: phường Hữu Nghị, thành phố Hòa Bình, tỉnh Hòa Bình.
+Mốc phát triển được nêu:
+2016: thành lập Trường Mầm non Hoa Dạ Hợp.
+2019: thành lập Trường Tiểu học Dạ Hợp.
+2022: thành lập Trường Liên cấp Dạ Hợp.
+Định hướng: kết hợp truyền thống “tiên học lễ, hậu học văn” với tiếp cận hiện đại (đa trí thông minh, trải nghiệm, cơ sở vật chất hiện đại); lấy người học làm trung tâm; phối hợp chặt chẽ nhà trường – gia đình.
+2) Triết lý và phương pháp giáo dục (tổng hợp từ dữ liệu gốc)
+Xây dựng môi trường an toàn, tích cực; tôn trọng cá nhân; chú trọng phát triển tri thức, kỹ năng, thể chất và cảm xúc.
+Dạy học theo hướng trải nghiệm; khuyến khích khám phá, sáng tạo; vận dụng giáo dục STEAM và thuyết Đa trí thông minh theo lứa tuổi.
+Tăng cường tiếng Anh theo lộ trình; tổ chức giờ học thiên về tương tác và giao tiếp.
+Theo dõi quá trình để hỗ trợ sự tiến bộ; duy trì cơ chế liên lạc với phụ huynh.
+3) Không gian và tiện ích (những hạng mục xuất hiện trong dữ liệu gốc)
+Quy mô khuôn viên được nêu: gần 7.000 m²; có sân chơi và các khu chức năng.
+Có bể bơi.
+Có thư viện/Bookstop và phòng “Happy Room” (không gian hỗ trợ cảm xúc, sinh hoạt CLB đọc sách).
+Có hệ thống camera phục vụ phụ huynh theo dõi (kèm yêu cầu bảo mật và tôn trọng riêng tư).
+4) Cơ cấu vận hành và các bộ phận (theo mô tả trong dữ liệu gốc)
+4.1. Ban điều hành và Ban giám hiệu (thông tin nghề nghiệp, đã loại bỏ dữ liệu định danh cá nhân)
+Chủ tịch HĐQT: Nguyễn Mạnh Dũng (sinh 1981). Nền tảng: doanh nhân; tham gia điều hành hệ thống từ năm 2016 theo dữ liệu gốc. Vai trò trọng tâm: định hướng phát triển và chiến lược.
+Hiệu trưởng: Nguyễn Thị Nhâm (sinh 1964). Nền tảng: sư phạm Toán; kinh nghiệm quản lý giáo dục.
+Hiệu trưởng (được mô tả trong hồ sơ chuyên môn): Nguyễn Thị Tuyết (sinh 1959). Điểm mạnh được nhấn mạnh: kỷ luật, nề nếp; giữ chuẩn mực chuyên môn; có nhiều năm quản lý trong hệ thống giáo dục.
+Phó hiệu trưởng: Nguyễn Thị Thanh Huyền (sinh 1983). Nền tảng: thạc sĩ; kinh nghiệm quản lý và điều hành chuyên môn. đồng thời phụ trách QAQC (đảm bảo & cải tiến chất lượng giáo dục) trong toàn hệ thống; chú trọng quy trình – tiêu chuẩn – hiệu quả vận hành.
+Phó hiệu trưởng: Nguyễn Thị Minh (sinh 1976). Nền tảng: quản lý giáo dục; kinh nghiệm giảng dạy và quản lý tại bậc tiểu học trước khi tham gia hệ thống.
+4.2. Khối vận hành (các vị trí được nêu trong dữ liệu mô tả)
+Trần Thị Phi Yến: Trưởng khối vận hành.
+Nguyễn Linh Trang: vận hành (tuyển sinh, hồ sơ, đồng phục; hỗ trợ vận hành các hoạt động theo mô tả).
+Ngô Thị Oanh: hành chính.
+Chu Thị Minh Tú: vận hành bếp.
+Bùi Đức Hòa: vận hành (phụ trách âm thanh; hỗ trợ sự kiện theo mô tả).
+4.3. Tổ năng khiếu – sự kiện (những nhân sự được nhắc tên trong dữ liệu mô tả)
+Vũ Thị Mỹ Linh: tổ trưởng chuyên môn; tham gia tổ chức hoạt động năng khiếu, sự kiện.
+Vũ Thị Thủy: giáo viên; tham gia hoạt động năng khiếu, sự kiện.
+Nguyễn Thanh Hà: giáo viên; tham gia hoạt động năng khiếu, sự kiện.
+Trần Thị Duyên: giáo viên; tham gia hoạt động năng khiếu, sự kiện.
+Nguyễn Thị Hiền: giáo viên; tham gia hoạt động năng khiếu, sự kiện.
+4.4. Happy Room và Bookstop
+Phòng Happy Room: không gian hỗ trợ cảm xúc; ưu tiên sự an toàn, tôn trọng và lắng nghe.
+Bookstop: CLB đọc sách sinh hoạt định kỳ hằng tháng; hoạt động gồm đọc theo sở thích, chia sẻ cảm nhận, vẽ, kể chuyện, review sách.
+Nhân sự phụ trách được nêu: Nguyễn Thị Quyết (thủ thư; đồng thời là “chủ nhân” Happy Room theo dữ liệu gốc).
+5) Danh sách nhân sự 44 người (đã làm sạch theo hồ sơ chi tiết nhất trong tệp)
+Nguyên tắc làm sạch: loại bỏ số điện thoại, email, giấy tờ tùy thân, mã định danh cá nhân, dân tộc, giới tính, quê quán; giữ tối đa thông tin nghề nghiệp và chuyên môn (năm sinh, vị trí, nhóm chức vụ, môn dạy, cấp học, trình độ, trạng thái làm việc).
+Nguyễn Thị Nhâm (1964) — Hiệu trưởng | Nhóm: Cán bộ quản lý | Môn: (không nêu) | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Tuyết (1959) — Hiệu trưởng | Nhóm: Cán bộ quản lý | Môn: (không nêu) | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Thanh Huyền (1983) — Phó hiệu trưởng | Nhóm: Cán bộ quản lý | Môn: (không nêu) | Cấp: (không nêu) | Trình độ: Thạc sĩ | Trạng thái: Đang làm việc
+Nguyễn Thị Minh (1976) — Phó hiệu trưởng | Nhóm: Cán bộ quản lý | Môn: (không nêu) | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Hồng Nhung (1984) — Phó hiệu trưởng | Nhóm: Cán bộ quản lý | Môn: (không nêu) | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Thu Hương (1981) — Giáo viên | Nhóm: Giáo viên | Môn: Toán | Cấp: Tiểu học | Trình độ: Đại học | Trạng thái: Đang làm việc
+Vũ Thị Mỹ Linh (1980) — Giáo viên | Nhóm: Giáo viên | Môn: Tiếng Anh | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Đỗ Thị Hiền (1980) — Giáo viên | Nhóm: Giáo viên | Môn: Văn | Cấp: Tiểu học | Trình độ: Đại học | Trạng thái: Đang làm việc
+Lê Thị Ngọc Mai (1994) — Giáo viên | Nhóm: Giáo viên | Môn: Văn | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Huế (1985) — Giáo viên | Nhóm: Giáo viên | Môn: Toán | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Đinh Hồng Quân (1986) — Giáo viên | Nhóm: Giáo viên | Môn: Lý | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Vân Anh (1989) — Giáo viên | Nhóm: Giáo viên | Môn: Hóa | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Bích Liên (1990) — Giáo viên | Nhóm: Giáo viên | Môn: Sinh | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Hoàng Thị Thanh (1990) — Giáo viên | Nhóm: Giáo viên | Môn: Sử | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Hằng (1981) — Giáo viên | Nhóm: Giáo viên | Môn: Địa | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Hà Văn Lanh (1975) — Giáo viên | Nhóm: Giáo viên | Môn: GDCD | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đã nghỉ
+Nguyễn Thị Huyền (1990) — Giáo viên | Nhóm: Giáo viên | Môn: Anh | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Đinh Thị Thu Hằng (1990) — Giáo viên | Nhóm: Giáo viên | Môn: Anh | Cấp: Tiểu học | Trình độ: Đại học | Trạng thái: Đang làm việc
+Đinh Thanh Thảo (1993) — Giáo viên | Nhóm: Giáo viên | Môn: Anh | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Dung (1992) — Giáo viên | Nhóm: Giáo viên | Môn: Anh | Cấp: THCS | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Thủy (1994) — Giáo viên | Nhóm: Giáo viên | Môn: Tiếng Anh | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Hiền (1991) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Mai (1993) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Trần Thị Hằng (1990) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Đinh Thị Nga (1988) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Ngọc (1994) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Trần Thị Duyên (1998) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Thùy Dương (2003) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thanh Hà (1998) — Giáo viên | Nhóm: Giáo viên | Môn: (không nêu) | Cấp: Mầm non | Trình độ: Cao đẳng | Trạng thái: Đang làm việc
+Nguyễn Thị Minh Tiên (1990) — Nhân viên | Nhóm: Nhân viên | Môn: Y tế | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Đặng Thị Thu Hường (1988) — Nhân viên | Nhóm: Nhân viên | Môn: Giáo vụ | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Quyết (1982) — Nhân viên | Nhóm: Nhân viên | Môn: Thư viện | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Thị Thu Phương (1988) — Nhân viên | Nhóm: Nhân viên | Môn: Thủ quỹ | Cấp: (không nêu) | Trình độ: Đại học | Trạng thái: Đang làm việc
+Vũ Nguyễn Thanh Tùng (1990) — Nhân viên | Nhóm: Nhân viên | Môn: Bếp trưởng | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Nguyễn Thị Tuyết (1992) — Nhân viên | Nhóm: Nhân viên | Môn: Cấp dưỡng | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Nguyễn Thị Vân (1993) — Nhân viên | Nhóm: Nhân viên | Môn: Cấp dưỡng | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Nguyễn Thị Minh (1995) — Nhân viên | Nhóm: Nhân viên | Môn: Cấp dưỡng | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Nguyễn Thị Hương (1986) — Nhân viên | Nhóm: Nhân viên | Môn: Vệ sinh | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Triệu Thị Phượng (1978) — Nhân viên | Nhóm: Nhân viên | Môn: Vệ sinh | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Nguyễn Văn Sài (1980) — Nhân viên | Nhóm: Nhân viên | Môn: Bảo vệ | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Bùi Thị Bích (1985) — Nhân viên | Nhóm: Nhân viên | Môn: Cấp dưỡng | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Bùi Ngọc Phú (1998) — Nhân viên | Nhóm: Nhân viên | Môn: Truyền thông | Cấp: (không nêu) | Trình độ: Trung cấp | Trạng thái: Đang làm việc
+Phạm Thị Kim Oanh (1996) — Giáo viên | Nhóm: Giáo viên | Môn: Tiếng Anh | Cấp: Tiểu học | Trình độ: Đại học | Trạng thái: Đang làm việc
+Nguyễn Đức Khang (1994) — Giáo viên | Nhóm: Giáo viên | Môn: Tin | Cấp: Tiểu học | Trình độ: Đại học | Trạng thái: Đang làm việc
+Thống kê nhanh từ danh sách 44 người (không thêm dữ kiện ngoài dữ liệu gốc)
+Năm sinh sớm nhất: 1959 (Nguyễn Thị Tuyết).
+Năm sinh muộn nhất: 2003 (Nguyễn Thị Thùy Dương).
+Theo trạng thái làm việc trong dữ liệu gốc: có 01 trường hợp “Đã nghỉ” (Hà Văn Lanh).
+6) Câu hỏi thường gặp (FAQ) – đã biên tập lại, bỏ câu trùng và làm rõ ý
+I. Tuyển sinh – Nhập học
+Làm thế nào để đăng ký tuyển sinh?
+Phụ huynh liên hệ nhà trường để được tư vấn và đặt lịch tham quan.
+Nhà trường giới thiệu chương trình, môi trường học tập và lớp học.
+Sau khi thống nhất nhu cầu, phụ huynh hoàn thiện hồ sơ nhập học theo hướng dẫn của nhà trường.
+Trường nhận trẻ từ mấy tuổi?
+Nhận trẻ từ 12 tháng đến 6 tuổi.
+Có yêu cầu kiểm tra đầu vào không?
+Không tổ chức kiểm tra đầu vào.
+Trường có chính sách hỗ trợ trẻ mới đi học không?
+Có. Trẻ được hỗ trợ làm quen với môi trường mới theo lộ trình phù hợp: làm quen giáo viên, bạn và lớp học; giáo viên theo sát, tạo cảm giác an toàn và kết nối; phối hợp chặt chẽ với phụ huynh để nắm thói quen, sức khỏe và nhu cầu của trẻ, từ đó điều chỉnh cách chăm sóc và tổ chức hoạt động.
+Trường có nhận trẻ nhập học giữa năm không?
+Có thể tiếp nhận tùy theo tình trạng lớp và nhu cầu thực tế; nhà trường trao đổi trước với phụ huynh và hỗ trợ trẻ làm quen để thích nghi an toàn.
+Có tổ chức ăn bán trú không?
+Có. Trẻ học bán trú và được chăm sóc theo chế độ sinh hoạt trọn ngày.
+II. Chương trình học
+Chương trình học của trường có gì nổi bật?
+Chương trình được thiết kế theo định hướng phát triển toàn diện, chú trọng “học qua trải nghiệm”.
+Ba mảng được nhấn mạnh trong dữ liệu gốc: tiếng Anh, STEAM, và kỹ năng sống.
+Nhà trường vận dụng thuyết Đa trí thông minh để quan sát, phát hiện điểm mạnh của từng trẻ và tổ chức hoạt động phù hợp.
+Trẻ được học những hoạt động nào?
+Hoạt động học theo chủ đề; vận động; âm nhạc; tạo hình; STEAM; tiếng Anh; kỹ năng sống.
+Có hoạt động ngoài trời và hoạt động trải nghiệm theo kế hoạch của trường.
+Lịch học của trẻ như thế nào?
+Thời gian hoạt động trong ngày: 7h00 đến 17h30 từ thứ Hai đến thứ Sáu.
+Trong ngày có các khung hoạt động: học tập theo chủ đề, vui chơi, vận động, ăn, ngủ, sinh hoạt.
+Trường có tổ chức lớp năng khiếu không?
+Có. Các lớp năng khiếu được nêu trong dữ liệu gốc gồm: múa, vẽ, cảm thụ âm nhạc; và một số hoạt động thể chất theo kế hoạch nhà trường.
+Giáo viên có chuyên môn phụ trách; lịch học phụ thuộc độ tuổi và thời khóa biểu từng lớp.
+Trường có tổ chức sinh nhật cho bé không?
+Có. Trường tổ chức sinh nhật theo tháng để tạo không khí ấm áp, vui vẻ và giúp trẻ có kỷ niệm đáng nhớ cùng bạn bè.
+III. Hoạt động trải nghiệm và dịch vụ ngoài giờ
+Trường có tổ chức dã ngoại không?
+Có. Mỗi học kỳ có hoạt động dã ngoại, trải nghiệm phù hợp lứa tuổi. Các ví dụ được nêu: đi trang trại, bảo tàng, công viên; trải nghiệm làm nghề; hoạt động ngoài trời theo kế hoạch của trường.
+Bé có được hoạt động ngoài trời không?
+Có. Trẻ có thời lượng vui chơi, vận động ngoài trời hằng ngày (tùy điều kiện thời tiết và kế hoạch lớp).
+Bé có cần mặc đồng phục không?
+Có. Theo dữ liệu gốc: thứ Hai mặc đồng phục; các ngày còn lại phụ huynh chuẩn bị trang phục phù hợp.
+Trường có thể chuyển lớp nếu bé chưa phù hợp không?
+Có thể, sau khi nhà trường trao đổi với phụ huynh, đánh giá tình hình và thống nhất phương án để bảo đảm trẻ thích nghi.
+Trường có tổ chức đón muộn ngoài giờ không?
+Có. Khung đón muộn theo dữ liệu gốc: 17h30 đến 18h30 (từ thứ Hai đến thứ Sáu).
+Phí đón muộn theo dữ liệu gốc:
+17h30–18h00: 50.000 đồng
+18h00–18h30: 100.000 đồng
+Phụ huynh cần thông báo trước để nhà trường sắp xếp.
+IV. Đội ngũ – Cơ sở vật chất – An toàn
+Giáo viên có kinh nghiệm không?
+Đội ngũ giáo viên kết hợp giữa người có kinh nghiệm và giáo viên trẻ nhiệt huyết; được đào tạo, bồi dưỡng định kỳ về chuyên môn và kỹ năng.
+Một lớp có bao nhiêu cô và sĩ số tối đa?
+Nhà trẻ (12–36 tháng): 2 giáo viên chính và 1 cô hỗ trợ.
+Mẫu giáo: 2 giáo viên/lớp (1 giáo viên chính, 1 giáo viên phụ).
+Có giáo viên bộ môn (múa, đàn, tiếng Anh) tham gia theo lịch.
+Sĩ số tối đa theo dữ liệu gốc:
+12–24 tháng: 20 trẻ
+2–4 tuổi: 25 trẻ
+4–5 tuổi: 28 trẻ
+5–6 tuổi: 30 trẻ
+Lớp tăng cường: 22 trẻ
+Trường có giáo viên nước ngoài dạy tiếng Anh không?
+Có. Trẻ được học tiếng Anh với giáo viên nước ngoài; giáo viên được mô tả là có chứng chỉ giảng dạy quốc tế (TESOL, CELTA hoặc tương đương) và được tuyển chọn theo tiêu chuẩn của nhà trường.
+Trường có camera để phụ huynh theo dõi không?
+Có. Phụ huynh được cấp tài khoản theo dõi; nhà trường yêu cầu tuân thủ nguyên tắc bảo mật và tôn trọng riêng tư.
+Trường có bể bơi không?
+Có. Theo dữ liệu gốc, bể bơi là một hạng mục vận hành và phục vụ hoạt động của nhà trường.
+V. Dinh dưỡng – Xe đưa đón – Sức khỏe
+Chế độ ăn uống của bé ra sao?
+Trẻ ăn 5 bữa/ngày (sáng, phụ sáng, trưa, phụ chiều, chiều).
+Bếp nấu tại trường; thực đơn đa dạng, cân đối dinh dưỡng; được công khai để phụ huynh theo dõi.
+Trường có xe đưa đón không?
+Có. Nhà trường có dịch vụ xe đưa đón theo tuyến; có nhân sự đi kèm hỗ trợ trẻ; quy định an toàn và lịch trình được thông báo theo kế hoạch.
+Nếu bé bị dị ứng thực phẩm thì nhà trường xử lý ra sao?
+Nhà trường ghi nhận thông tin dị ứng từ đầu; thông báo đến giáo viên lớp và bộ phận bếp.
+Thực hiện khẩu phần hoặc điều chỉnh bữa ăn phù hợp và giám sát để tránh nhầm lẫn.
+Nếu bé bị ốm thì nhà trường xử lý như thế nào?
+Giáo viên báo ngay nhân viên y tế; đưa trẻ vào phòng y tế theo dõi.
+Thông báo phụ huynh ngay để thống nhất phương án chăm sóc hoặc đưa trẻ đi khám.
+Nếu phụ huynh gửi thuốc, nhà trường thực hiện theo chỉ định và quy trình an toàn; trường hợp nghi bệnh truyền nhiễm sẽ triển khai biện pháp phòng dịch và thông tin tới phụ huynh.
+VI. Học phí – Chính sách
+Học phí của trường là bao nhiêu?
+Theo dữ liệu gốc:
+Lớp Nhà trẻ: 3.300.000 đồng/tháng
+Lớp Mẫu giáo: 3.000.000 đồng/tháng
+Lớp tăng cường tiếng Anh: 4.500.000 đồng/tháng
+Tiền ăn: 946.000 đồng/tháng (5 bữa/ngày)
+Dữ liệu gốc có ghi chú: nên kèm file biểu phí cụ thể theo thời điểm.
+Trường có ưu đãi hoặc học bổng không?
+Có. Chính sách ưu đãi được nêu gồm: gia đình có từ 2 con học cùng trường; phụ huynh là cư dân khu đô thị Dạ Hợp; phụ huynh đóng học phí theo kỳ hoặc theo năm.
+VII. Cơ cấu tổ chức – Nhân sự – Giới thiệu chung – Sự kiện
+Cơ cấu tổ chức của Trường Mầm non Hoa Dạ Hợp gồm những gì?
+Ban giám hiệu: 1 hiệu trưởng và 3 hiệu phó.
+Tổ Mẫu giáo: 3 lớp 2–3 tuổi; 3 lớp 3–4 tuổi; 4 lớp 4–5 tuổi.
+Tổ Nhà trẻ: 1 lớp 12–24 tháng; 3 lớp 24–36 tháng.
+Nhân sự của trường (theo số liệu mô tả trong dữ liệu gốc)?
+Theo mô tả: 40 giáo viên; 4 người thuộc Ban giám hiệu; có giáo viên năng khiếu và giáo viên đứng lớp.
+Lưu ý: dữ liệu gốc cũng có một danh sách nhân sự 44 người kèm thông tin chuyên môn (đã được làm sạch và trình bày ở phần 5).
+Giới thiệu chung về Trường Mầm non Hoa Dạ Hợp
+Môi trường học tập an toàn, thân thiện; định hướng “chơi mà học”; tôn trọng sự khác biệt; nuôi dưỡng cả nhận thức, thể chất, ngôn ngữ, nghệ thuật và kỹ năng xã hội.
+Sự kiện trong năm (theo lịch mốc được nêu trong dữ liệu gốc)
+23/8: Họp phụ huynh và Ban đại diện phụ huynh học sinh
+5/9: Khai giảng
+23/9: Cuộc thi âm nhạc
+6/10: Trung thu
+20/10: Ngày của mẹ, hoạt động đi chợ (kỹ năng sống)
+25/10: TATC (tên hoạt động theo dữ liệu gốc)
+31/10: Lễ hội hóa trang
+10/11–19/11: Tuần lễ Be a teacher và giao lưu thể thao
+28/11: Vườn cam (khối Nhà trẻ)
+4/12: Quốc tế ôm (SEL)
+22/12: Bé hành quân
+24/12: Giáng sinh và làm bánh tặng người thân
+27/12: TATC (tên hoạt động theo dữ liệu gốc)
+9/1: Họp phụ huynh cuối học kỳ 1
+23/1: Ngày hội sensory
+30/1: Bảo tàng quân sự (khối Mẫu giáo)
+9/2–14/2: Hội chợ xuân
+6/2: Siêu nhí yêu toán
+6/3: Rạp chiếu phim DHE (circle reading, âm nhạc, SEL)
+27/3: Thi an toàn giao thông (sport, STEAM)
+10/4: TATC (tên hoạt động theo dữ liệu gốc)
+20/4–25/4: Triển lãm tranh (art, STEAM)
+16/5: Họp phụ huynh học sinh
+27/5: Tổng kết năm học và lễ trưởng thành
+VII. Thông tin liên hệ:
+Địa chỉ: Tổ 8, Hữu Nghị, phường Hòa Bình.
 Điện thoại: 02183.83.88.99 – Phòng Tuyển sinh.
 Hotline: 0356.756.971 (Cô Huyền).
 Email: dhe@dahop.edu.vn.
