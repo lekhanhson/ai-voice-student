@@ -204,10 +204,10 @@ Nếu phụ huynh gửi thuốc, nhà trường thực hiện theo chỉ định
 VI. Học phí – Chính sách
 Học phí của trường là bao nhiêu?
 Theo dữ liệu gốc:
-Lớp Nhà trẻ: 3300000 đồng/tháng
-Lớp Mẫu giáo: 3000000 đồng/tháng
-Lớp tăng cường tiếng Anh: 4500000 đồng/tháng
-Tiền ăn: 946000 đồng/tháng (5 bữa/ngày)
+Lớp Nhà trẻ: 3,300,000 đồng/tháng
+Lớp Mẫu giáo: 3,000,000 đồng/tháng
+Lớp tăng cường tiếng Anh: 4,500,000 đồng/tháng
+Tiền ăn: 946,000 đồng/tháng (5 bữa/ngày)
 Dữ liệu gốc có ghi chú: nên kèm file biểu phí cụ thể theo thời điểm.
 Trường có ưu đãi hoặc học bổng không?
 Có. Chính sách ưu đãi được nêu gồm: gia đình có từ 2 con học cùng trường; phụ huynh là cư dân khu đô thị Dạ Hợp; phụ huynh đóng học phí theo kỳ hoặc theo năm.
