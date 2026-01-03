@@ -33,7 +33,7 @@ Tên hệ thống: Hệ thống Giáo dục Dạ Hợp.
 Đơn vị trong hệ thống (theo dữ liệu gốc):
 Trường Mầm non Hoa Dạ Hợp.
 Trường Liên cấp Dạ Hợp (Tiểu học, THCS).
-Địa điểm được nêu: phường Hữu Nghị, thành phố Hòa Bình, tỉnh Hòa Bình.
+Địa điểm được nêu: tổ 8, Hữu Nghị, phường Hòa Bình.
 Mốc phát triển được nêu:
 2016: thành lập Trường Mầm non Hoa Dạ Hợp.
 2019: thành lập Trường Tiểu học Dạ Hợp.
