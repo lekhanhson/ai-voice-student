@@ -259,7 +259,7 @@ Email: dhe@dahop.edu.vn.
 async function askSchoolAssistant(userText) {
   try {
     // Giới hạn tài liệu nội bộ nếu sau này bạn lỡ để quá dài
-    const MAX_DOC_CHARS = 10000;
+    const MAX_DOC_CHARS = 25000;
     const docSnippet =
       INTERNAL_DOC.length > MAX_DOC_CHARS
         ? INTERNAL_DOC.slice(0, MAX_DOC_CHARS)
