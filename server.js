@@ -54,7 +54,7 @@ Có hệ thống camera phục vụ phụ huynh theo dõi (kèm yêu cầu bảo
 Chủ tịch HĐQT: Nguyễn Mạnh Dũng (sinh 1981). Nền tảng: doanh nhân; tham gia điều hành hệ thống từ năm 2016 theo dữ liệu gốc. Vai trò trọng tâm: định hướng phát triển và chiến lược.
 Hiệu trưởng: Nguyễn Thị Nhâm (sinh 1964). Nền tảng: sư phạm Toán; kinh nghiệm quản lý giáo dục.
 Hiệu trưởng (được mô tả trong hồ sơ chuyên môn): Nguyễn Thị Tuyết (sinh 1959). Điểm mạnh được nhấn mạnh: kỷ luật, nề nếp; giữ chuẩn mực chuyên môn; có nhiều năm quản lý trong hệ thống giáo dục.
-Phó hiệu trưởng: Nguyễn Thị Thanh Huyền (sinh 1983). Nền tảng: thạc sĩ; kinh nghiệm quản lý và điều hành chuyên môn. đồng thời phụ trách QAQC (đảm bảo & cải tiến chất lượng giáo dục) trong toàn hệ thống; chú trọng quy trình – tiêu chuẩn – hiệu quả vận hành.
+Phó hiệu trưởng: Nguyễn Thanh Huyền (sinh 1983). Nền tảng: thạc sĩ; kinh nghiệm quản lý và điều hành chuyên môn. đồng thời phụ trách QAQC (đảm bảo & cải tiến chất lượng giáo dục) trong toàn hệ thống; chú trọng quy trình – tiêu chuẩn – hiệu quả vận hành.
 Phó hiệu trưởng: Nguyễn Thị Minh (sinh 1976). Nền tảng: quản lý giáo dục; kinh nghiệm giảng dạy và quản lý tại bậc tiểu học trước khi tham gia hệ thống.
 4.2. Khối vận hành (các vị trí được nêu trong dữ liệu mô tả)
 Trần Thị Phi Yến: Trưởng khối vận hành.
@@ -204,10 +204,10 @@ Nếu phụ huynh gửi thuốc, nhà trường thực hiện theo chỉ định
 VI. Học phí – Chính sách
 Học phí của trường là bao nhiêu?
 Theo dữ liệu gốc:
-Lớp Nhà trẻ: 3.300.000 đồng/tháng
-Lớp Mẫu giáo: 3.000.000 đồng/tháng
-Lớp tăng cường tiếng Anh: 4.500.000 đồng/tháng
-Tiền ăn: 946.000 đồng/tháng (5 bữa/ngày)
+Lớp Nhà trẻ: 3300000 đồng/tháng
+Lớp Mẫu giáo: 3000000 đồng/tháng
+Lớp tăng cường tiếng Anh: 4500000 đồng/tháng
+Tiền ăn: 946000 đồng/tháng (5 bữa/ngày)
 Dữ liệu gốc có ghi chú: nên kèm file biểu phí cụ thể theo thời điểm.
 Trường có ưu đãi hoặc học bổng không?
 Có. Chính sách ưu đãi được nêu gồm: gia đình có từ 2 con học cùng trường; phụ huynh là cư dân khu đô thị Dạ Hợp; phụ huynh đóng học phí theo kỳ hoặc theo năm.
@@ -248,8 +248,8 @@ Sự kiện trong năm (theo lịch mốc được nêu trong dữ liệu gốc)
 27/5: Tổng kết năm học và lễ trưởng thành
 VII. Thông tin liên hệ:
 Địa chỉ: Tổ 8, Hữu Nghị, phường Hòa Bình.
-Điện thoại: 02183.83.88.99 – Phòng Tuyển sinh.
-Hotline: 0356.756.971 (Cô Huyền).
+Điện thoại: 02183838899 – Phòng Tuyển sinh.
+Hotline: 0356756971 (Cô Nguyễn Thanh Huyền).
 Email: dhe@dahop.edu.vn.
 `;
 
